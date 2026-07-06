@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(git --version)",
+      "Bash(gh auth *)",
+      "WebFetch(domain:share.google)",
+      "Read(//home/arpan/.nvm/versions/**)",
+      "Read(//home/arpan/**)",
+      "Bash(node.exe --version)",
+      "Read(//mnt/c/Program Files/nodejs/**)",
+      "Bash(npm.cmd --version)",
+      "WebFetch(domain:www.google.com)",
+      "Bash(npx --yes create-next-app@latest _scaffold --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --disable-git --yes)",
+      "Bash(npx --yes create-next-app@latest scaffold-tmp --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --disable-git --yes)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit -q -m 'Scaffold Next.js 16 app \\(TS, App Router, Tailwind v4\\) + project docs *)"
+    ]
+  }
+}
