@@ -15,7 +15,9 @@ demoable to the owner — feedback early beats perfection late.
 
 - [x] Apply for `utsabbooks.com.np` at register.com.np (citizenship copy + cover
       letter; approval takes days–weeks — this is why it's first) — *applied 2026-07-06, account created; awaiting approval*
-- [ ] Create accounts: GitHub, Vercel, Supabase; claim/create Google Business Profile
+- [~] Create accounts: GitHub, Vercel, Supabase — *done; repo at
+      github.com/ArpanGyawali/Utsab-Books-and-Printers, pushed 2026-07-06.
+      Remaining: connect Vercel to repo; claim/create Google Business Profile*
 - [~] Collect ASSETS.md Phase-1 items — *requested from client 2026-07-06 (photos,
       brand, sample book data); confirmed: name "Utsab Books and Printers",
       address Ranibagiya, Sainamaina-1, Rupandehi. Using placeholders until delivery.*
