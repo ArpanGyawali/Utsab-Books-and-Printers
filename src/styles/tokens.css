@@ -1,0 +1,58 @@
+/*
+ * Design tokens — paper & ink theme.
+ * Single source of truth for color/spacing/radii. See SKILL.md design rules.
+ * Review visually at /en/dev/tokens (both scripts, all badges).
+ */
+
+:root {
+  /* Paper (backgrounds) */
+  --paper: #f7f3ea;
+  --paper-shade: #efe8d8;
+
+  /* Ink (text) */
+  --ink: #1e2430;
+  --ink-soft: #4a5160;
+  --ink-faint: color-mix(in srgb, var(--ink) 18%, transparent);
+
+  /* Accent — deep signboard red.
+     TODO(assets): re-match against the real signboard photo when it arrives. */
+  --accent: #8f3128;
+  --accent-deep: #6f261f;
+  --stamp: color-mix(in srgb, var(--accent) 85%, transparent);
+
+  /* Status colors — muted, ink-like (never neon) */
+  --status-in-stock: #2f7d4f;
+  --status-arriving: #b07a1f;
+  --status-out-of-stock: #9b3b3b;
+
+  /* Ruled-line motif */
+  --rule-line: color-mix(in srgb, #3d5a80 22%, transparent);
+  --rule-margin: color-mix(in srgb, var(--accent) 45%, transparent);
+
+  /* Radii — modest, paper-like. No pills. */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+
+  /* Shadow ceiling per design rules: never heavier than 0 1px 3px */
+  --shadow-card: 0 1px 3px rgb(30 36 48 / 0.14);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-shade: var(--paper-shade);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --color-instock: var(--status-in-stock);
+  --color-arriving: var(--status-arriving);
+  --color-outofstock: var(--status-out-of-stock);
+
+  --font-sans: var(--font-mukta), "Mukta", system-ui, sans-serif;
+  --font-heading: var(--font-fraunces), var(--font-mukta), Georgia, serif;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+
+  --shadow-card: 0 1px 3px rgb(30 36 48 / 0.14);
+}

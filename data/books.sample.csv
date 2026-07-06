@@ -1,0 +1,14 @@
+class,subject,title_en,title_ne,publisher,price,status,units,expected_arrival
+Nursery,English,My First ABC Book,मेरो पहिलो ABC किताब,Sunrise Publication,250,in_stock,14,
+Nursery,Nepali,Sajilo Nepali Varnamala,सजिलो नेपाली वर्णमाला,Ekta Books,220,in_stock,10,
+LKG,Maths,Fun with Numbers 1,रमाइलो अङ्क १,JBD Publication,275,arriving,0,2026-07-20
+UKG,English,English Made Easy Primer,,Asia Publication,300,in_stock,8,
+1,Nepali,Mero Nepali Kitab 1,मेरो नेपाली किताब १,Sajha Prakashan,320,in_stock,22,
+2,Science,Our Science and Environment 2,हाम्रो विज्ञान र वातावरण २,Kriti Books,365,out_of_stock,0,
+3,English,New Gateway to English 3,,JBD Publication,410,in_stock,17,
+4,Social Studies,Hamro Samajik Adhyayan 4,हाम्रो सामाजिक अध्ययन ४,Ekta Books,395,arriving,0,2026-07-15
+5,Maths,Prime Mathematics 5,,Asia Publication,450,in_stock,12,
+8,Computer,Computer Science 8,कम्प्युटर विज्ञान ८,Sunrise Publication,520,in_stock,6,
+10,Optional Maths,Optional Mathematics 10,ऐच्छिक गणित १०,Kriti Books,640,out_of_stock,0,
+11,Accountancy,Principles of Accounting I,,Asmita Publication,780,in_stock,9,
+12,Business Studies,Business Studies XII,,Asmita Publication,820,arriving,0,2026-08-01

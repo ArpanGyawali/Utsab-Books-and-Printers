@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "title": "Utsab Books and Printers — Ranibagiya, Sainamaina",
+    "description": "School books, stationery, printing and photocopy services in Ranibagiya, Sainamaina-1, Rupandehi. Check book availability online and ask us on WhatsApp."
+  },
+  "brand": {
+    "name": "Utsab Books and Printers",
+    "nameShort": "Utsab Books",
+    "tagline": "Books, stationery and printing — everything for the school year, under one roof.",
+    "since": "Serving since {year}"
+  },
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "books": "Look for Book",
+    "contact": "Contact",
+    "openNow": "Open now",
+    "closedNow": "Closed now"
+  },
+  "langChooser": {
+    "title": "भाषा रोज्नुहोस् · Choose your language",
+    "en": "English",
+    "ne": "नेपाली",
+    "enHint": "Continue in English",
+    "neHint": "नेपालीमा जारी राख्नुहोस्"
+  },
+  "langToggle": {
+    "label": "Language",
+    "en": "EN",
+    "ne": "नेपाली"
+  },
+  "hero": {
+    "kicker": "Ranibagiya, Sainamaina",
+    "title": "Your bookshop for the whole school year",
+    "subtitle": "School books for Nursery to Class 12, stationery, printing, photocopy, lamination and binding — all at one trusted local shop.",
+    "ctaBooks": "Look for a Book",
+    "ctaServices": "Our Services",
+    "photoAlt": "Utsab Books and Printers shop front in Ranibagiya, Sainamaina"
+  },
+  "status": {
+    "in_stock": "In stock",
+    "arriving": "Arriving soon",
+    "out_of_stock": "Out of stock"
+  },
+  "footer": {
+    "addressHeading": "Where we are",
+    "hoursHeading": "Opening hours",
+    "contactHeading": "Contact",
+    "viewOnMap": "View on Google Maps",
+    "days": {
+      "sun": "Sunday",
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday"
+    },
+    "closed": "Closed",
+    "copyright": "© {year} Utsab Books and Printers, Ranibagiya, Sainamaina-1, Rupandehi"
+  },
+  "stub": {
+    "comingSoon": "This page is being prepared — it will be ready very soon.",
+    "backHome": "Back to home",
+    "services": {
+      "title": "Our Services",
+      "note": "Stationery, printing, books and more — full details are on the way."
+    },
+    "books": {
+      "title": "Look for Book",
+      "note": "Soon you will be able to search your child's school books here and see live availability."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "note": "Map, directions and phone numbers are coming here soon."
+    }
+  }
+}
