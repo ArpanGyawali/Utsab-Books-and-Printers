@@ -31,8 +31,9 @@ export default async function OpenGraphImage() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            border: "6px double #8f3128",
+            border: "3px solid #8f3128",
             borderRadius: 8,
+            boxShadow: "0 0 0 3px #f7f3ea, 0 0 0 6px #8f3128",
             padding: "48px 72px",
             transform: "rotate(-1deg)",
           }}
