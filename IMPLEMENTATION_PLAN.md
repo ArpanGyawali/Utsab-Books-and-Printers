@@ -62,6 +62,14 @@ phone, Devanagari renders correctly, zero forbidden design elements.
 
 ## Phase 2 — Public Pages (static content)
 
+> **Status (2026-07-06): built & deployed** — full home (banner strip, photo
+> strip, story), services notebook tabs + print-quote form (wa.me handoff; DB
+> in Phase 4), contact (map embed by listing name, landmark card, call/WA/Viber,
+> hours w/ today highlight), SEO baseline (metadata + hreflang, LocalBusiness
+> JSON-LD, sitemap, robots, OG image). **Exit criteria NOT yet met:** all
+> photos/copy are placeholders (`TODO(assets)`), Lighthouse pass + owner
+> sign-off pending. Swap real assets as they arrive, then re-review.
+
 1. **Hero/Home**: full-bleed shop photograph with ink-toned overlay, name lockup
    in active script, one-line owner tagline, two CTAs — "Look for Book" (primary)
    and "Our Services". Below the fold: seasonal **banner strip** (driven by
