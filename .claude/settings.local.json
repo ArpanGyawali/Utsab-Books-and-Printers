@@ -31,7 +31,26 @@
       "Bash(curl -s -o /dev/null -m 8 -w '%{http_code}' http://172.28.128.1:3000/en/dev/tokens)",
       "Bash(curl -s -o /dev/null -m 8 -w '%{http_code}' http://172.28.128.1:3000/ne/books)",
       "Bash(curl -s -m 8 http://172.28.128.1:3000/ne)",
-      "Bash(git commit -q -m 'Phase 1: design system, i18n \\(en/ne\\), layout shell with placeholder assets *)"
+      "Bash(git commit -q -m 'Phase 1: design system, i18n \\(en/ne\\), layout shell with placeholder assets *)",
+      "Bash(gh.exe auth *)",
+      "Bash(git config *)",
+      "Bash(ssh -o BatchMode=yes -o ConnectTimeout=5 -T git@github.com)",
+      "Read(//home/arpan/.ssh/**)",
+      "Bash(ssh-keygen -t ed25519 -C \"arpan.gyawali7@gmail.com\" -f ~/.ssh/id_ed25519 -N \"\" -q)",
+      "Bash(ssh-keyscan -t ed25519 github.com)",
+      "Bash(ssh -o BatchMode=yes -o ConnectTimeout=8 -T git@github.com)",
+      "Bash(ssh -o BatchMode=yes -T git@github.com)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(git commit -q -m 'Update plan: repo pushed, accounts created *)",
+      "Bash(curl *)",
+      "Bash(cmd.exe *)",
+      "Bash(cmd.exe /c \"taskkill /PID 17468 /F & taskkill /PID 1800 /F\")",
+      "Bash(cmd.exe /c \"netstat -ano | findstr :3000 | findstr LISTENING\")",
+      "Bash(curl -s -o /dev/null -m 3 -w '%{http_code}' http://172.28.128.1:3000/en)",
+      "Bash(curl -v -m 30 -o /dev/null http://172.28.128.1:3000/en/opengraph-image)",
+      "Bash(cmd.exe /c \"taskkill /PID 19748 /F\")",
+      "Bash(git commit -q -m 'Phase 2: public pages — full home, services tabs + print quote, contact, SEO *)"
     ]
   }
 }

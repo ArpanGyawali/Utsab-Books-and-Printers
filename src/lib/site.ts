@@ -16,6 +16,13 @@ export const site = {
     ne: "रानीबगिया, सैनामैना-१, रूपन्देही",
   },
   mapsUrl: "https://share.google/PpisejsuDEO8yVQ5L",
+  // Query-based embed (Google listing: "Utsab Books And Printers", kgmid /g/11npvknzh2).
+  // TODO(assets): swap for an exact-pin embed once owner shares coordinates.
+  mapsEmbedUrl:
+    "https://maps.google.com/maps?q=Utsab%20Books%20And%20Printers%2C%20Ranibagiya%2C%20Sainamaina%2C%20Rupandehi&z=15&hl=ne&output=embed",
+
+  // Canonical site URL (swap to https://utsabbooks.com.np when domain approves)
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://utsab-books-and-printers.vercel.app",
 
   // TODO(assets): placeholder numbers — replace with the shop's real ones
   phone: "+977-9800000000",

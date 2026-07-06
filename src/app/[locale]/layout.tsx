@@ -7,6 +7,7 @@ import { routing } from "@/i18n/routing";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LanguageGate from "@/components/LanguageGate";
+import { site } from "@/lib/site";
 import "../globals.css";
 
 // Body + Devanagari. Mukta covers both scripts; Nepali headings fall back to it.
@@ -36,8 +37,13 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
   return {
+    metadataBase: new URL(site.url),
     title: t("title"),
     description: t("description"),
+    alternates: {
+      canonical: `/${locale}`,
+      languages: { en: "/en", ne: "/ne" },
+    },
   };
 }
 

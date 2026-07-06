@@ -2,10 +2,13 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { use } from "react";
+import BannerStrip from "@/components/BannerStrip";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
 import RuledDivider from "@/components/RuledDivider";
+import SectionHeading from "@/components/SectionHeading";
 import StampLogo from "@/components/StampLogo";
+import LocalBusinessJsonLd from "@/components/LocalBusinessJsonLd";
 import { site } from "@/lib/site";
 
 export default function HomePage({
@@ -18,12 +21,21 @@ export default function HomePage({
   return <HomeContent />;
 }
 
+const stripPhotos = [
+  { src: "/images/placeholders/shop-interior.svg", key: "interior" },
+  { src: "/images/placeholders/stationery.svg", key: "stationery" },
+  { src: "/images/placeholders/printing.svg", key: "printing" },
+] as const;
+
 function HomeContent() {
   const t = useTranslations("hero");
   const tBrand = useTranslations("brand");
+  const tHome = useTranslations("home");
 
   return (
     <>
+      <LocalBusinessJsonLd />
+
       {/* Hero — full-bleed shop photo with ink overlay.
           TODO(assets): swap placeholder for the real exterior photo. */}
       <section className="relative isolate flex min-h-[70vh] items-center justify-center overflow-hidden">
@@ -66,12 +78,58 @@ function HomeContent() {
         </Container>
       </section>
 
+      <BannerStrip />
+
+      {/* Three-photo strip. TODO(assets): swap for real shop photos. */}
+      <Container className="py-10">
+        <ul className="grid gap-3 sm:grid-cols-3">
+          {stripPhotos.map(({ src, key }) => (
+            <li
+              key={key}
+              className="relative aspect-[8/5] overflow-hidden rounded-md shadow-[var(--shadow-card)]"
+            >
+              <Image
+                src={src}
+                alt={tHome(`photoStrip.${key}`)}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 100vw, 33vw"
+              />
+            </li>
+          ))}
+        </ul>
+      </Container>
+
       <RuledDivider />
 
-      <Container className="py-10 text-center">
-        <p className="mx-auto max-w-xl text-lg leading-relaxed text-ink-soft">
-          {tBrand("tagline")}
-        </p>
+      {/* Shop story. TODO(assets): replace placeholder with the owner's own
+          words (Nepali first, then translated — ASSETS.md §3). */}
+      <Container className="py-12">
+        <div className="grid items-center gap-8 sm:grid-cols-[3fr_2fr]">
+          <div>
+            <SectionHeading
+              kicker={tHome("storyKicker", { year: site.establishedYear })}
+            >
+              {tHome("storyHeading")}
+            </SectionHeading>
+            <p className="max-w-prose leading-relaxed text-ink-soft">
+              {tHome("story")}
+            </p>
+            <p className="mt-3 font-medium text-ink">{tHome("storyNote")}</p>
+            <p className="mx-auto mt-8 max-w-xl text-center text-lg italic text-ink-soft sm:text-left">
+              {tBrand("tagline")}
+            </p>
+          </div>
+          <div className="relative aspect-[4/5] overflow-hidden rounded-md shadow-[var(--shadow-card)]">
+            <Image
+              src="/images/placeholders/owner.svg"
+              alt={tHome("ownerPhotoAlt")}
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 100vw, 40vw"
+            />
+          </div>
+        </div>
       </Container>
     </>
   );

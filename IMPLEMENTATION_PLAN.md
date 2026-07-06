@@ -34,11 +34,12 @@ demoable to the owner — feedback early beats perfection late.
 Goal: an empty but *distinctive* shell. If Phase 1 looks generic, stop and fix —
 everything else inherits from it.
 
-> **Status (2026-07-06):** steps 1–5 built locally (Next.js 16, Tailwind v4,
-> next-intl via `src/proxy.ts`, tokens + `/dev/tokens` page, motifs, primitives,
-> both locales verified). Placeholder photos/slogan/year/phone/hours are marked
-> `TODO(assets)` in code — see ASSETS.md. **Remaining:** push to GitHub +
-> connect Vercel (accounts pending), owner phone review of the deployed shell.
+> **Status (2026-07-06): ✅ DONE.** Built, pushed, and deployed:
+> <https://utsab-books-and-printers.vercel.app> (auto-deploys from `main`).
+> Next.js 16, Tailwind v4, next-intl via `src/proxy.ts`, tokens + `/dev/tokens`
+> page, motifs, primitives, both locales verified. Placeholder
+> photos/slogan/year/phone/hours are marked `TODO(assets)` — see ASSETS.md.
+> Owner phone review pending (do alongside Phase 2).
 
 1. **Scaffold**: `create-next-app` (TS, App Router, Tailwind). Repo → GitHub →
    Vercel connected. Deploy the blank app immediately (deployment pipeline proven

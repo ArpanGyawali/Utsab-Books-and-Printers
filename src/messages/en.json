@@ -1,7 +1,19 @@
 {
   "meta": {
     "title": "Utsab Books and Printers — Ranibagiya, Sainamaina",
-    "description": "School books, stationery, printing and photocopy services in Ranibagiya, Sainamaina-1, Rupandehi. Check book availability online and ask us on WhatsApp."
+    "description": "School books, stationery, printing and photocopy services in Ranibagiya, Sainamaina-1, Rupandehi. Check book availability online and ask us on WhatsApp.",
+    "services": {
+      "title": "Services — Utsab Books and Printers",
+      "description": "Stationery, printing, photocopy, lamination, binding, school books and sports items in Ranibagiya, Sainamaina. Send us your print job on WhatsApp."
+    },
+    "books": {
+      "title": "Look for Book — Utsab Books and Printers",
+      "description": "Search school books from Nursery to Class 12 and check live availability at our shop in Sainamaina, Rupandehi."
+    },
+    "contact": {
+      "title": "Contact — Utsab Books and Printers",
+      "description": "Find Utsab Books and Printers in Ranibagiya, Sainamaina-1, Rupandehi. Call, WhatsApp or visit us — map, landmarks and opening hours."
+    }
   },
   "brand": {
     "name": "Utsab Books and Printers",
@@ -37,10 +49,122 @@
     "ctaServices": "Our Services",
     "photoAlt": "Utsab Books and Printers shop front in Ranibagiya, Sainamaina"
   },
+  "banner": {
+    "label": "Notice",
+    "text": "New session books are arriving — ask about your school's full set!"
+  },
+  "home": {
+    "photoStrip": {
+      "interior": "Inside the shop — shelves of books and stationery",
+      "stationery": "Stationery section — pens, notebooks and geometry boxes",
+      "printing": "Printing and photocopy corner of the shop"
+    },
+    "storyKicker": "Since {year}",
+    "storyHeading": "A neighbourhood shop, run by neighbours",
+    "story": "From our counter in Ranibagiya we have been handing schoolbooks, copies and pens to the same families for years — first for the parents, now for their children. If it is on your school's list, we either have it on the shelf or we will tell you honestly when it arrives.",
+    "storyNote": "— the Utsab Books family",
+    "ownerPhotoAlt": "The owner at the counter of Utsab Books and Printers"
+  },
   "status": {
     "in_stock": "In stock",
     "arriving": "Arriving soon",
     "out_of_stock": "Out of stock"
+  },
+  "services": {
+    "title": "Our Services",
+    "kicker": "What we do",
+    "intro": "Four counters of one shop — pick a tab, see what's inside.",
+    "tablistLabel": "Service categories",
+    "itemsHeading": "On the shelf",
+    "tabs": {
+      "stationery": {
+        "label": "Stationery",
+        "tagline": "Every pen, copy and instrument on your school list.",
+        "photoAlt": "Stationery shelves with pens, notebooks and geometry boxes",
+        "items": {
+          "i1": "Pens, pencils and refills",
+          "i2": "Copies, notebooks and registers",
+          "i3": "Geometry boxes and instruments",
+          "i4": "Art and craft supplies",
+          "i5": "Exam boards, files and folders",
+          "i6": "School bags and bottles"
+        }
+      },
+      "printing": {
+        "label": "Printing",
+        "tagline": "Send it from your phone, collect it printed.",
+        "photoAlt": "Printer and photocopier in action at the shop",
+        "items": {
+          "i1": "Photocopy — black & white and colour",
+          "i2": "Print from phone, email or pen drive",
+          "i3": "Lamination (cards to A3)",
+          "i4": "Spiral and book binding",
+          "i5": "Passport-size photos",
+          "i6": "Scan to PDF"
+        }
+      },
+      "books": {
+        "label": "Books",
+        "tagline": "School sets from Nursery to Class 12, season after season.",
+        "photoAlt": "Stacks of school textbooks arranged by class",
+        "items": {
+          "i1": "School textbooks (Nursery–12)",
+          "i2": "Guides and guess papers",
+          "i3": "Practice and grammar books",
+          "i4": "Dictionaries",
+          "i5": "Children's story books"
+        },
+        "cta": "Check availability in Look for Book"
+      },
+      "other": {
+        "label": "Other",
+        "tagline": "The things you didn't expect a bookshop to have.",
+        "photoAlt": "Sports items section of the shop",
+        "items": {
+          "i1": "Sports items — balls, bats, shuttlecocks",
+          "i2": "Gift items and wrapping",
+          "i3": "Calculators, including scientific",
+          "i4": "Office supplies"
+        }
+      }
+    },
+    "quote": {
+      "heading": "Ask for a print quote",
+      "sub": "Tell us about the job — we reply on WhatsApp with the price.",
+      "name": "Your name",
+      "phone": "Phone number",
+      "description": "What do you need printed?",
+      "descriptionPlaceholder": "e.g. 40-page project report, front page in colour",
+      "pages": "Pages (approx.)",
+      "color": "Colour",
+      "colorBW": "Black & white",
+      "colorColor": "Colour",
+      "binding": "Binding",
+      "bindingNone": "No binding",
+      "bindingSpiral": "Spiral",
+      "bindingBook": "Book / tape",
+      "submit": "Send on WhatsApp",
+      "hint": "Opens WhatsApp with your details filled in — nothing is sent until you press send there.",
+      "waTemplate": "Hello Utsab Books! I need a print job:\nName: {name}\nPhone: {phone}\nJob: {description}\nPages: {pages}\nType: {color}\nBinding: {binding}",
+      "errRequired": "Please fill name, phone and the job description."
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "kicker": "Come by, call, or message",
+    "landmarkHeading": "How locals find us",
+    "landmark": "On the main road at Ranibagiya, Sainamaina-1 — a short walk from Ranibagiya Chowk. Ask anyone for the books-and-printing shop.",
+    "landmarkNote": "Exact landmark directions are being confirmed with the owner.",
+    "mapTitle": "Map showing Utsab Books and Printers, Ranibagiya, Sainamaina",
+    "call": "Call the shop",
+    "whatsapp": "Message on WhatsApp",
+    "viber": "Chat on Viber",
+    "waGreeting": "Hello Utsab Books! I have a question.",
+    "hoursHeading": "Opening hours",
+    "today": "today",
+    "closureHeading": "Festival notice",
+    "closureNone": "No closure planned — we're open as usual.",
+    "addressHeading": "Address"
   },
   "footer": {
     "addressHeading": "Where we are",
