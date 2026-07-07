@@ -78,6 +78,8 @@ export interface Database {
           status: BookStatus;
           units: number;
           expected_arrival: string | null;
+          /** Path inside the public `covers` storage bucket; null = placeholder. */
+          cover_path: string | null;
           updated_at: string;
           /** Generated column (title_en ∥ title_ne ∥ subject ∥ publisher). */
           search: string;
@@ -94,6 +96,7 @@ export interface Database {
           status?: BookStatus;
           units?: number;
           expected_arrival?: string | null;
+          cover_path?: string | null;
           updated_at?: string;
         };
         Update: {
@@ -108,6 +111,7 @@ export interface Database {
           status?: BookStatus;
           units?: number;
           expected_arrival?: string | null;
+          cover_path?: string | null;
           updated_at?: string;
         };
         Relationships: [];

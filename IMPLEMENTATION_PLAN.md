@@ -78,7 +78,9 @@ phone, Devanagari renders correctly, zero forbidden design elements.
 2. **Services page**: notebook index-tab layout (Stationery / Printing / Books /
    Other). Each tab: real photo, owner's one-liner, item list. Printing tab
    includes the **print quote form** UI (wired in Phase 4): name, phone,
-   job description, pages, B/W-or-color, binding → stored + wa.me handoff.
+   job description (asks for colour-or-B/W + approx. pages in one field),
+   binding → stored + wa.me handoff; the user attaches the file to print
+   in the WhatsApp chat (form says so explicitly).
 3. **Contact page**: creative map treatment — embedded Google Map beside a
    "how locals find us" landmark description card (both languages), tap-to-call
    button, WhatsApp and Viber buttons, hours table with today highlighted,
@@ -140,7 +142,11 @@ Built inside the same app at `/admin`. Mobile-first — the owner will use his p
    to forget. Session persistence so he logs in rarely.
 2. **Books management**: searchable list (same search as public) → tap a book →
    edit sheet with three-segment status control, units stepper, date picker for
-   arrival, price field. Add Book form. Delete with confirm.
+   arrival, price field, and **optional front-cover photo upload** (to the public
+   `covers` storage bucket via a service-role route handler, sets
+   `books.cover_path` — migration 0003 already applied; public card shows a
+   watermark-initial placeholder until a cover exists). Add Book form.
+   Delete with confirm.
 3. **CSV import UI**: upload → dry-run diff preview (inserts/updates/errors) →
    commit. Reuses the Phase-3 script logic. Also an **export** button (backup).
 4. **Waiting list**: inquiries grouped by book; when a book flips to in-stock,

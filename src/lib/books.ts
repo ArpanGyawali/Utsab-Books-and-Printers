@@ -88,6 +88,13 @@ export async function getBooks(
   }
 }
 
+/** Public URL of an admin-uploaded front cover; null = show the placeholder. */
+export function coverUrl(book: Book): string | null {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!book.cover_path || !base) return null;
+  return `${base}/storage/v1/object/public/covers/${book.cover_path}`;
+}
+
 /** Locale-aware book title with cross-locale fallback (SKILL.md i18n rules). */
 export function bookTitle(book: Book, locale: string): string {
   if (locale === "ne") return book.title_ne || book.title_en;
