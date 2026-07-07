@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { useLocale, useTranslations } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { use } from "react";
+import ClosureNotice from "@/components/ClosureNotice";
 import Container from "@/components/Container";
 import HoursTable from "@/components/HoursTable";
 import InkAccent from "@/components/InkAccent";
@@ -72,7 +73,7 @@ function ContactContent() {
         </div>
       </div>
 
-      {/* Tap-to-call / WhatsApp / Viber — TODO(assets): placeholder number */}
+      {/* Tap-to-call / WhatsApp / Viber */}
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <a
           href={telLink()}
@@ -95,6 +96,11 @@ function ContactContent() {
           {t("viber")}
         </a>
       </div>
+      <p className="mt-2 text-sm text-ink-soft">
+        <a href={`tel:${site.phoneSecondary.replace(/[^+\d]/g, "")}`} className="underline decoration-ink-soft/40 underline-offset-2">
+          {t("altPhone", { phone: site.phoneSecondary })}
+        </a>
+      </p>
 
       {/* Hours with today highlighted */}
       <div className="mt-10 grid gap-8 sm:grid-cols-2">
@@ -104,8 +110,7 @@ function ContactContent() {
         </div>
         <div>
           <h3 className="mb-3 text-lg font-semibold">{t("closureHeading")}</h3>
-          {/* Festival-closure slot — wired to site_settings in Phase 3 */}
-          <p className="text-ink-soft">{t("closureNone")}</p>
+          <ClosureNotice />
         </div>
       </div>
     </Container>

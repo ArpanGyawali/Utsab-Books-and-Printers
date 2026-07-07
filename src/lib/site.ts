@@ -24,9 +24,11 @@ export const site = {
   // Canonical site URL (swap to https://utsabbooks.com.np when domain approves)
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://utsab-books-and-printers.vercel.app",
 
-  // TODO(assets): placeholder numbers — replace with the shop's real ones
-  phone: "+977-9800000000",
-  whatsapp: process.env.NEXT_PUBLIC_SHOP_WA ?? "9779800000000",
+  // Primary number — WhatsApp and calls
+  phone: "+977-9851017951",
+  // Secondary number — calls only
+  phoneSecondary: "+977-9841254514",
+  whatsapp: process.env.NEXT_PUBLIC_SHOP_WA ?? "9779851017951",
   // TODO(assets): link real Facebook page if one exists
   facebookUrl: "",
 

@@ -91,6 +91,19 @@ and photos; Lighthouse mobile ≥ 90; owner sign-off on copy.
 
 ## Phase 3 — Database & Look for Book (the differentiator)
 
+> **Status (2026-07-07): built & verified locally.** Supabase live (project in
+> ap-northeast-1; use the *Session pooler* URL — the direct host is IPv6-only
+> and unreachable from this WSL box). Migrations 0001+0002 applied via
+> `npm run db:migrate`; sample CSV imported via `npm run db:import`; RLS
+> verified as anon (reads ok, writes blocked, inquiry/quote inserts ok);
+> /en/books + /ne/books tested end-to-end incl. trigram search, Devanagari
+> phone normalization in /api/notify, wa.me links with the REAL shop number
+> (+977 9851017951, confirmed 2026-07-07; secondary 9841254514 on contact page).
+> Banner + closure notice now read from site_settings (tag `settings`).
+> **Remaining for exit criteria:** add Supabase env vars to Vercel and deploy;
+> re-import when the owner's real spreadsheet arrives; test on a real phone
+> with the owner. Real inventory is still the blocker for "any real book in ≤3 taps".
+
 1. **Supabase setup**: run migrations for full schema in SKILL.md (schools,
    classes, books, inquiries, site_settings, print_quotes). RLS policies:
    public read on catalog/settings, anon insert only on inquiries/print_quotes,

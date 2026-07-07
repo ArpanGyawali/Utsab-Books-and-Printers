@@ -1,13 +1,22 @@
-import { useTranslations } from "next-intl";
+import { getLocale, getTranslations } from "next-intl/server";
 import Container from "./Container";
 import InkAccent from "./InkAccent";
+import { getNoticeSetting, noticeText } from "@/lib/settings";
 
 /**
- * Seasonal notice strip. Hardcoded placeholder for now — Phase 3 wires it
- * to the `site_settings` table so the owner can edit it from /admin.
+ * Seasonal notice strip, driven by site_settings.banner (editable from
+ * /admin in Phase 4). Falls back to the messages copy when the DB is
+ * unreachable; hidden entirely when the owner disables it.
  */
-export default function BannerStrip() {
-  const t = useTranslations("banner");
+export default async function BannerStrip() {
+  const [t, locale, banner] = await Promise.all([
+    getTranslations("banner"),
+    getLocale(),
+    getNoticeSetting("banner"),
+  ]);
+
+  if (banner && !banner.enabled) return null;
+  const text = (banner && noticeText(banner, locale)) || t("text");
 
   return (
     <aside className="border-y border-[var(--ink-faint)] bg-paper-shade">
@@ -17,7 +26,7 @@ export default function BannerStrip() {
           <span className="mr-2 font-bold uppercase tracking-widest text-accent">
             {t("label")}
           </span>
-          {t("text")}
+          {text}
         </p>
       </Container>
     </aside>

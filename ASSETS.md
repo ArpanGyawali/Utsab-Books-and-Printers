@@ -62,8 +62,8 @@ Aim for at least 2000px on the long edge.
 - [ ] Local landmark directions ("50m from ___ Chowk, opposite ___") in both
       languages — this powers the creative map section
 - [x] Google Maps pin/share link: <https://share.google/PpisejsuDEO8yVQ5L>
-- [ ] **Primary phone number** (confirm it's on WhatsApp; ideally also Viber)
-- [ ] Secondary phone (if any)
+- [x] **Primary phone number**: **+977 9851017951** (WhatsApp + calls; Viber unconfirmed)
+- [x] Secondary phone: **+977 9841254514**
 - [ ] Opening hours, per day + Saturday schedule
 - [ ] Typical festival closures (Dashain/Tihar pattern) for the closure-notice feature
 - [ ] Email address (create one if none: e.g. utsabbooks@gmail.com)
