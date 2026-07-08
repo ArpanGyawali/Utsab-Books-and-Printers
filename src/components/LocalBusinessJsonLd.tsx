@@ -26,6 +26,7 @@ export default function LocalBusinessJsonLd({ hours }: { hours: WeekHours }) {
     alternateName: locale === "ne" ? site.nameEn : site.nameNe,
     url: site.url,
     telephone: site.phone,
+    foundingDate: String(site.establishedYear),
     hasMap: site.mapsUrl,
     address: {
       "@type": "PostalAddress",

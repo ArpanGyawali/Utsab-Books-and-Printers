@@ -8,8 +8,10 @@ export const site = {
   // TODO(assets): confirm Devanagari spelling with owner (उत्सव vs उत्सब)
   nameNe: "उत्सव बुक्स एण्ड प्रिन्टर्स",
 
-  // TODO(assets): placeholder — owner to confirm establishment year
-  establishedYear: 2015,
+  // Confirmed by owner: 2021 A.D. = 2078 B.S. The NE locale shows the B.S.
+  // year (how the owner and customers say it); numerals stay Arabic (SKILL.md).
+  establishedYear: 2021,
+  establishedYearBS: 2078,
 
   address: {
     en: "Ranibagiya, Sainamaina-1, Rupandehi",
@@ -61,6 +63,11 @@ export function localizedName(locale: string) {
 
 export function localizedAddress(locale: string) {
   return locale === "ne" ? site.address.ne : site.address.en;
+}
+
+/** Establishment year as each locale states it: B.S. in Nepali, A.D. in English. */
+export function localizedEstablishedYear(locale: string) {
+  return locale === "ne" ? site.establishedYearBS : site.establishedYear;
 }
 
 /** True if the shop is open right now in Asia/Kathmandu. */

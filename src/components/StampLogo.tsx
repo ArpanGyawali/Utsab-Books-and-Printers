@@ -1,5 +1,5 @@
 import { useLocale, useTranslations } from "next-intl";
-import { site } from "@/lib/site";
+import { localizedEstablishedYear } from "@/lib/site";
 
 /**
  * Stamp-style logo lockup (EN + NE via messages).
@@ -34,7 +34,7 @@ export default function StampLogo({
       </span>
       {size === "lg" ? (
         <span className="mt-1 block text-center text-[0.45em] font-medium uppercase tracking-[0.3em] text-ink-soft">
-          {t("since", { year: site.establishedYear })}
+          {t("since", { year: localizedEstablishedYear(locale) })}
         </span>
       ) : null}
     </span>

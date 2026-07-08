@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import BannerStrip from "@/components/BannerStrip";
 import Button from "@/components/Button";
@@ -9,7 +9,7 @@ import SectionHeading from "@/components/SectionHeading";
 import StampLogo from "@/components/StampLogo";
 import LocalBusinessJsonLd from "@/components/LocalBusinessJsonLd";
 import { Link } from "@/i18n/navigation";
-import { site, type WeekHours } from "@/lib/site";
+import { localizedEstablishedYear, type WeekHours } from "@/lib/site";
 import { getShopHours } from "@/lib/settings";
 
 export default async function HomePage({
@@ -33,13 +33,19 @@ function HomeContent({ hours }: { hours: WeekHours }) {
   const t = useTranslations("hero");
   const tBrand = useTranslations("brand");
   const tHome = useTranslations("home");
+  const locale = useLocale();
+  // 2021 A.D. in English, 2078 B.S. in Nepali — same opening day.
+  const establishedYear = localizedEstablishedYear(locale);
 
   return (
     <>
       <LocalBusinessJsonLd hours={hours} />
 
-      {/* Hero — full-bleed shop-front photo with ink overlay. */}
-      <section className="relative isolate flex min-h-[70vh] items-center justify-center overflow-hidden">
+      {/* Hero — full-bleed shop-front photo with ink overlay. The section
+          follows the photo's own aspect ratio (2400×1773) so the storefront
+          isn't cropped; it only grows past that when the overlaid content
+          needs more room (narrow phones), and is capped on tall viewports. */}
+      <section className="relative isolate flex aspect-[2400/1773] max-h-[85vh] w-full items-center justify-center overflow-hidden">
         <Image
           src="/images/storefront.jpg"
           alt={t("photoAlt")}
@@ -74,7 +80,7 @@ function HomeContent({ hours }: { hours: WeekHours }) {
             </Button>
           </div>
           <p className="text-sm text-paper-shade">
-            {tBrand("since", { year: site.establishedYear })}
+            {tBrand("since", { year: establishedYear })}
           </p>
         </Container>
       </section>
@@ -86,7 +92,7 @@ function HomeContent({ hours }: { hours: WeekHours }) {
         <div className="grid items-center gap-8 sm:grid-cols-[3fr_2fr]">
           <div>
             <SectionHeading
-              kicker={tHome("storyKicker", { year: site.establishedYear })}
+              kicker={tHome("storyKicker", { year: establishedYear })}
             >
               {tHome("storyHeading")}
             </SectionHeading>
@@ -98,25 +104,32 @@ function HomeContent({ hours }: { hours: WeekHours }) {
               {tBrand("tagline")}
             </p>
           </div>
-          <div className="grid gap-3">
-            <div className="relative aspect-[3/4] overflow-hidden rounded-md shadow-[var(--shadow-card)]">
-              <Image
-                src="/images/owner2.jpg"
-                alt={tHome("ownerDeskAlt")}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 100vw, 40vw"
-              />
-            </div>
-            <div className="relative aspect-[4/3] overflow-hidden rounded-md shadow-[var(--shadow-card)]">
-              <Image
-                src="/images/owner1.jpg"
-                alt={tHome("ownerCounterAlt")}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 100vw, 40vw"
-              />
-            </div>
+          {/* Two prints laid on the counter: the portrait (3:4) tilted left,
+              the landscape (4:3) overlapping from the right — both at their
+              native aspect ratios, so nothing is cropped. */}
+          <div className="mx-auto w-full max-w-sm py-3 sm:max-w-none">
+            <figure className="w-[70%] -rotate-2 rounded-sm border border-[var(--ink-faint)] bg-paper p-2 pb-6 shadow-[var(--shadow-card)]">
+              <div className="relative aspect-[3/4] overflow-hidden">
+                <Image
+                  src="/images/owner2.jpg"
+                  alt={tHome("ownerDeskAlt")}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 70vw, 28vw"
+                />
+              </div>
+            </figure>
+            <figure className="relative z-10 -mt-[22%] ml-auto w-[85%] rotate-[1.5deg] rounded-sm border border-[var(--ink-faint)] bg-paper p-2 pb-6 shadow-[var(--shadow-card)]">
+              <div className="relative aspect-[4/3] overflow-hidden">
+                <Image
+                  src="/images/owner1.jpg"
+                  alt={tHome("ownerCounterAlt")}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 85vw, 34vw"
+                />
+              </div>
+            </figure>
           </div>
         </div>
       </Container>

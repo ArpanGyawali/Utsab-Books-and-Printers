@@ -48,7 +48,8 @@ Aim for at least 2000px on the long edge.
 - [ ] Nepali script name: e.g. `उत्सव बुक्स एण्ड प्रिन्टर्स` — **confirm spelling with owner** (उत्सव vs उत्सब)
 - [ ] Logo, if one exists (signboard/bill pad version is fine — we can redraw/vectorize).
       If none exists: decide we design a simple **stamp-style text mark** (fits paper/ink theme)
-- [ ] Establishment year (for "Serving since 20XX")
+- [x] Establishment year — confirmed 2026-07-09: **2021 A.D. / 2078 B.S.**
+      (EN locale shows 2021, NE locale shows "2078 साल")
 - [ ] Any tagline the owner already uses on bills/signboard
 
 ## 3. Written Content (owner's own words — no generic copy)
