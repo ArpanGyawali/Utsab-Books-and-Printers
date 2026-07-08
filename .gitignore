@@ -45,3 +45,4 @@ next-env.d.ts
 
 # raw phone photos (web-sized copies live in public/images)
 /data/photos-originals
+/data/qa-shots

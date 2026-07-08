@@ -41,11 +41,12 @@ function HomeContent({ hours }: { hours: WeekHours }) {
     <>
       <LocalBusinessJsonLd hours={hours} />
 
-      {/* Hero — full-bleed shop-front photo with ink overlay. The section
-          follows the photo's own aspect ratio (2400×1773) so the storefront
-          isn't cropped; it only grows past that when the overlaid content
-          needs more room (narrow phones), and is capped on tall viewports. */}
-      <section className="relative isolate flex aspect-[2400/1773] max-h-[85vh] w-full items-center justify-center overflow-hidden">
+      {/* Hero — full-bleed shop-front photo with ink overlay. From sm up the
+          section follows the photo's own aspect ratio (2400×1773, capped on
+          tall viewports) so the storefront isn't cropped. On phones the
+          content dictates the height — an aspect cap there would clip the
+          overlaid title and buttons. */}
+      <section className="relative isolate flex w-full items-center justify-center overflow-hidden sm:aspect-[2400/1773] sm:max-h-[85vh]">
         <Image
           src="/images/storefront.jpg"
           alt={t("photoAlt")}
@@ -54,19 +55,20 @@ function HomeContent({ hours }: { hours: WeekHours }) {
           className="object-cover"
           sizes="100vw"
         />
+        {/* Overlay dark enough to hold text over the bright sky in the photo */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-[color-mix(in_srgb,var(--ink)_62%,transparent)]"
+          className="absolute inset-0 bg-[color-mix(in_srgb,var(--ink)_74%,transparent)]"
         />
         <Container className="relative z-10 flex flex-col items-center gap-6 py-16 text-center">
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-paper-shade">
+          <p className="text-sm font-medium uppercase tracking-[0.25em] text-paper [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]">
             {t("kicker")}
           </p>
           <StampLogo size="lg" className="bg-paper" />
-          <h1 className="max-w-2xl text-3xl font-semibold text-paper sm:text-4xl">
+          <h1 className="max-w-2xl text-3xl font-semibold text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.55)] sm:text-4xl">
             {t("title")}
           </h1>
-          <p className="max-w-xl text-base leading-relaxed text-paper-shade">
+          <p className="max-w-xl text-base leading-relaxed text-paper [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]">
             {t("subtitle")}
           </p>
           <div className="mt-2 flex flex-col gap-3 sm:flex-row">
@@ -79,7 +81,7 @@ function HomeContent({ hours }: { hours: WeekHours }) {
               {t("ctaServices")}
             </Button>
           </div>
-          <p className="text-sm text-paper-shade">
+          <p className="text-sm text-paper [text-shadow:0_1px_3px_rgba(0,0,0,0.5)]">
             {tBrand("since", { year: establishedYear })}
           </p>
         </Container>
@@ -104,12 +106,13 @@ function HomeContent({ hours }: { hours: WeekHours }) {
               {tBrand("tagline")}
             </p>
           </div>
-          {/* Two prints laid on the counter: the portrait (3:4) tilted left,
-              the landscape (4:3) overlapping from the right — both at their
-              native aspect ratios, so nothing is cropped. */}
+          {/* Two prints laid on the counter: the near-square print desk photo
+              (1500×1563) tilted left, the landscape counter photo (4:3)
+              overlapping from the right — both at their native aspect ratios,
+              so nothing is cropped. */}
           <div className="mx-auto w-full max-w-sm py-3 sm:max-w-none">
-            <figure className="w-[70%] -rotate-2 rounded-sm border border-[var(--ink-faint)] bg-paper p-2 pb-6 shadow-[var(--shadow-card)]">
-              <div className="relative aspect-[3/4] overflow-hidden">
+            <figure className="w-[74%] -rotate-2 rounded-sm border border-[var(--ink-faint)] bg-paper p-2 pb-6 shadow-[var(--shadow-card)]">
+              <div className="relative aspect-[1500/1563] overflow-hidden">
                 <Image
                   src="/images/owner2.jpg"
                   alt={tHome("ownerDeskAlt")}
@@ -119,7 +122,7 @@ function HomeContent({ hours }: { hours: WeekHours }) {
                 />
               </div>
             </figure>
-            <figure className="relative z-10 -mt-[22%] ml-auto w-[85%] rotate-[1.5deg] rounded-sm border border-[var(--ink-faint)] bg-paper p-2 pb-6 shadow-[var(--shadow-card)]">
+            <figure className="relative z-10 -mt-[18%] ml-auto w-[85%] rotate-[1.5deg] rounded-sm border border-[var(--ink-faint)] bg-paper p-2 pb-6 shadow-[var(--shadow-card)]">
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
                   src="/images/owner1.jpg"
