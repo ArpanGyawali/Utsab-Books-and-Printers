@@ -6,8 +6,10 @@ import Button from "./Button";
 import { waLink } from "@/lib/inquiry";
 
 /**
- * Print-quote form. Phase 2: composes a WhatsApp message only.
- * Phase 4 additionally stores the quote in `print_quotes` before handoff.
+ * Print-quote form. Stores the quote in `print_quotes` (the owner's admin
+ * inbox) and hands off to WhatsApp. The insert is fire-and-forget with
+ * keepalive: WhatsApp is the primary channel, so the handoff must not wait
+ * on (or be blocked by) the API call.
  */
 
 /** Normalize Devanagari numerals (०-९ → 0-9) per SKILL.md i18n rules. */
@@ -44,6 +46,15 @@ export default function PrintQuoteForm() {
           ? "bindingBook"
           : "bindingNone"
     );
+
+    // Store for the owner's admin inbox — deliberately not awaited, so the
+    // WhatsApp handoff below stays inside the user gesture (popup blockers).
+    fetch("/api/quote", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, phone, description, binding: bindingKey }),
+      keepalive: true,
+    }).catch(() => {});
 
     window.open(
       waLink(t("waTemplate", { name, phone, description, binding })),

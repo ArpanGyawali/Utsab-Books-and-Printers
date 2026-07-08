@@ -138,6 +138,19 @@ Test the full flow on a real phone with the owner's actual number.
 
 Built inside the same app at `/admin`. Mobile-first — the owner will use his phone.
 
+> **Status (2026-07-08): built, verified locally, NOT yet committed.** All
+> screens exist (login + magic-link callback, books list/edit/new with cover
+> upload, CSV import with dry-run + export, waiting list, quotes inbox,
+> settings incl. hours), guarded by proxy adminGuard + requireAdmin + RLS;
+> every mutation calls `updateTag('books'|'settings')` (Next 16 name for
+> revalidateTag). Public print-quote form now also stores to `print_quotes`
+> via rate-limited `/api/quote` (verified: anon insert passes RLS). Admin
+> seeded via `npm run db:seed-admin`: utsabbooks@gmail.com in auth.users +
+> private.admin_emails. Public hours/open-now/JSON-LD now read from
+> site_settings. **Remaining:** full magic-link login walkthrough on a real
+> phone, commit + push (push auto-deploys — set Supabase env vars + ADMIN_EMAIL
+> in Vercel FIRST or /admin will 500 in prod), owner onboarding session.
+
 1. **Auth**: Supabase magic-link login restricted to `ADMIN_EMAIL`. No passwords
    to forget. Session persistence so he logs in rarely.
 2. **Books management**: searchable list (same search as public) → tap a book →

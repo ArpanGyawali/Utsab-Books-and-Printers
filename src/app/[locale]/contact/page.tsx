@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { useLocale, useTranslations } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { use } from "react";
 import ClosureNotice from "@/components/ClosureNotice";
 import Container from "@/components/Container";
 import HoursTable from "@/components/HoursTable";
 import InkAccent from "@/components/InkAccent";
 import SectionHeading from "@/components/SectionHeading";
 import { telLink, viberLink, waLink } from "@/lib/inquiry";
-import { localizedAddress, localizedName, site } from "@/lib/site";
+import { localizedAddress, localizedName, site, type WeekHours } from "@/lib/site";
+import { getShopHours } from "@/lib/settings";
 
 export async function generateMetadata({
   params,
@@ -27,17 +27,18 @@ export async function generateMetadata({
   };
 }
 
-export default function ContactPage({
+export default async function ContactPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = use(params);
+  const { locale } = await params;
   setRequestLocale(locale);
-  return <ContactContent />;
+  const hours = await getShopHours();
+  return <ContactContent hours={hours} />;
 }
 
-function ContactContent() {
+function ContactContent({ hours }: { hours: WeekHours }) {
   const t = useTranslations("contact");
   const locale = useLocale();
 
@@ -106,7 +107,7 @@ function ContactContent() {
       <div className="mt-10 grid gap-8 sm:grid-cols-2">
         <div>
           <h3 className="mb-3 text-lg font-semibold">{t("hoursHeading")}</h3>
-          <HoursTable />
+          <HoursTable hours={hours} />
         </div>
         <div>
           <h3 className="mb-3 text-lg font-semibold">{t("closureHeading")}</h3>

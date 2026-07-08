@@ -4,6 +4,7 @@ import Container from "./Container";
 import StampLogo from "./StampLogo";
 import LanguageToggle from "./LanguageToggle";
 import OpenNowDot from "./OpenNowDot";
+import type { WeekHours } from "@/lib/site";
 
 const links = [
   { href: "/services", key: "services" },
@@ -11,7 +12,7 @@ const links = [
   { href: "/contact", key: "contact" },
 ] as const;
 
-export default function Navbar() {
+export default function Navbar({ hours }: { hours: WeekHours }) {
   const t = useTranslations("nav");
 
   return (
@@ -21,7 +22,7 @@ export default function Navbar() {
           <StampLogo size="sm" />
         </Link>
 
-        <OpenNowDot className="order-2 sm:order-none" />
+        <OpenNowDot hours={hours} className="order-2 sm:order-none" />
         <LanguageToggle />
 
         <nav

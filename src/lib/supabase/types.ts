@@ -114,7 +114,22 @@ export interface Database {
           cover_path?: string | null;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "books_class_id_fkey";
+            columns: ["class_id"];
+            isOneToOne: false;
+            referencedRelation: "classes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "books_school_id_fkey";
+            columns: ["school_id"];
+            isOneToOne: false;
+            referencedRelation: "schools";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       inquiries: {
         Row: {
@@ -138,7 +153,15 @@ export interface Database {
           created_at?: string;
           notified?: boolean;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "inquiries_book_id_fkey";
+            columns: ["book_id"];
+            isOneToOne: false;
+            referencedRelation: "books";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       site_settings: {
         Row: { key: string; value: Json };

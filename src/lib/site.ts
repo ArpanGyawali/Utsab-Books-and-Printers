@@ -33,20 +33,27 @@ export const site = {
   facebookUrl: "",
 
   timezone: "Asia/Kathmandu",
-  /**
-   * Opening hours, 24h clock, keyed 0=Sunday … 6=Saturday.
-   * TODO(assets): placeholder schedule — confirm with owner.
-   */
-  hours: [
-    { day: 0, open: "06:30", close: "19:30" },
-    { day: 1, open: "06:30", close: "19:30" },
-    { day: 2, open: "06:30", close: "19:30" },
-    { day: 3, open: "06:30", close: "19:30" },
-    { day: 4, open: "06:30", close: "19:30" },
-    { day: 5, open: "06:30", close: "19:30" },
-    { day: 6, open: "07:00", close: "12:00" },
-  ] as const,
 } as const;
+
+/** One day's opening hours (24h clock); null = closed that day. */
+export type DayHours = { open: string; close: string } | null;
+/** Opening hours for the week, indexed 0=Sunday … 6=Saturday. */
+export type WeekHours = DayHours[];
+
+/**
+ * Fallback opening hours, used until the owner saves his own in the admin
+ * settings screen (stored in site_settings, read via getShopHours()).
+ * TODO(assets): placeholder schedule — confirm with owner.
+ */
+export const defaultHours: WeekHours = [
+  { open: "06:30", close: "19:30" },
+  { open: "06:30", close: "19:30" },
+  { open: "06:30", close: "19:30" },
+  { open: "06:30", close: "19:30" },
+  { open: "06:30", close: "19:30" },
+  { open: "06:30", close: "19:30" },
+  { open: "07:00", close: "12:00" },
+];
 
 export function localizedName(locale: string) {
   return locale === "ne" ? site.nameNe : site.nameEn;
@@ -57,7 +64,7 @@ export function localizedAddress(locale: string) {
 }
 
 /** True if the shop is open right now in Asia/Kathmandu. */
-export function isOpenNow(now: Date = new Date()): boolean {
+export function isOpenNow(hours: WeekHours, now: Date = new Date()): boolean {
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone: site.timezone,
     weekday: "short",
@@ -73,7 +80,7 @@ export function isOpenNow(now: Date = new Date()): boolean {
   const dayIndex = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(
     weekday
   );
-  const today = site.hours.find((h) => h.day === dayIndex);
+  const today = hours[dayIndex];
   if (!today) return false;
 
   const current = `${hour}:${minute}`;

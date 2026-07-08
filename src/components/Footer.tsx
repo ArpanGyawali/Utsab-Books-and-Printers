@@ -1,11 +1,11 @@
 import { useLocale, useTranslations } from "next-intl";
 import Container from "./Container";
 import InkAccent from "./InkAccent";
-import { site, localizedAddress, localizedName } from "@/lib/site";
+import { site, localizedAddress, localizedName, type WeekHours } from "@/lib/site";
 
 const dayKeys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 
-export default function Footer() {
+export default function Footer({ hours }: { hours: WeekHours }) {
   const t = useTranslations("footer");
   const locale = useLocale();
 
@@ -35,13 +35,13 @@ export default function Footer() {
           <InkAccent variant="star" className="mb-3 h-5 w-5 text-accent" />
           <table className="w-full max-w-60 text-sm text-ink-soft">
             <tbody>
-              {site.hours.map((h) => (
-                <tr key={h.day}>
+              {hours.map((h, day) => (
+                <tr key={day}>
                   <th scope="row" className="py-0.5 pr-3 text-left font-normal">
-                    {t(`days.${dayKeys[h.day]}`)}
+                    {t(`days.${dayKeys[day]}`)}
                   </th>
                   <td className="py-0.5 text-right tabular-nums">
-                    {h.open}–{h.close}
+                    {h ? `${h.open}–${h.close}` : t("closed")}
                   </td>
                 </tr>
               ))}

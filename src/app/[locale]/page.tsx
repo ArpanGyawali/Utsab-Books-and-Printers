@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
-import { use } from "react";
 import BannerStrip from "@/components/BannerStrip";
 import Button from "@/components/Button";
 import Container from "@/components/Container";
@@ -9,16 +8,18 @@ import RuledDivider from "@/components/RuledDivider";
 import SectionHeading from "@/components/SectionHeading";
 import StampLogo from "@/components/StampLogo";
 import LocalBusinessJsonLd from "@/components/LocalBusinessJsonLd";
-import { site } from "@/lib/site";
+import { site, type WeekHours } from "@/lib/site";
+import { getShopHours } from "@/lib/settings";
 
-export default function HomePage({
+export default async function HomePage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = use(params);
+  const { locale } = await params;
   setRequestLocale(locale);
-  return <HomeContent />;
+  const hours = await getShopHours();
+  return <HomeContent hours={hours} />;
 }
 
 const stripPhotos = [
@@ -27,14 +28,14 @@ const stripPhotos = [
   { src: "/images/placeholders/printing.svg", key: "printing" },
 ] as const;
 
-function HomeContent() {
+function HomeContent({ hours }: { hours: WeekHours }) {
   const t = useTranslations("hero");
   const tBrand = useTranslations("brand");
   const tHome = useTranslations("home");
 
   return (
     <>
-      <LocalBusinessJsonLd />
+      <LocalBusinessJsonLd hours={hours} />
 
       {/* Hero — full-bleed shop photo with ink overlay.
           TODO(assets): swap placeholder for the real exterior photo. */}

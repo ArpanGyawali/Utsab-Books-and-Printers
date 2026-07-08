@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
-import { isOpenNow } from "@/lib/site";
+import { isOpenNow, type WeekHours } from "@/lib/site";
 
 // Re-check the clock every minute
 function subscribe(onChange: () => void) {
@@ -13,12 +13,19 @@ function subscribe(onChange: () => void) {
 /**
  * Live "open now" indicator (Asia/Kathmandu). Server renders nothing;
  * the real state appears after hydration (avoids clock mismatch).
+ * Hours come from the server (owner-set via admin settings).
  */
-export default function OpenNowDot({ className = "" }: { className?: string }) {
+export default function OpenNowDot({
+  hours,
+  className = "",
+}: {
+  hours: WeekHours;
+  className?: string;
+}) {
   const t = useTranslations("nav");
   const open = useSyncExternalStore(
     subscribe,
-    () => isOpenNow(),
+    () => isOpenNow(hours),
     () => null
   );
 

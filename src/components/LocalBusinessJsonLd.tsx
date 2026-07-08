@@ -1,5 +1,5 @@
 import { useLocale } from "next-intl";
-import { site, localizedName } from "@/lib/site";
+import { site, localizedName, type WeekHours } from "@/lib/site";
 
 const dayNames = [
   "Sunday",
@@ -16,7 +16,7 @@ const dayNames = [
  * No geo coordinates yet — TODO(assets): add once the exact pin is known.
  * Never add fake aggregate ratings (SKILL.md SEO rules).
  */
-export default function LocalBusinessJsonLd() {
+export default function LocalBusinessJsonLd({ hours }: { hours: WeekHours }) {
   const locale = useLocale();
 
   const data = {
@@ -34,12 +34,18 @@ export default function LocalBusinessJsonLd() {
       addressRegion: "Rupandehi",
       addressCountry: "NP",
     },
-    openingHoursSpecification: site.hours.map((h) => ({
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: dayNames[h.day],
-      opens: h.open,
-      closes: h.close,
-    })),
+    openingHoursSpecification: hours.flatMap((h, day) =>
+      h
+        ? [
+            {
+              "@type": "OpeningHoursSpecification",
+              dayOfWeek: dayNames[day],
+              opens: h.open,
+              closes: h.close,
+            },
+          ]
+        : []
+    ),
   };
 
   return (

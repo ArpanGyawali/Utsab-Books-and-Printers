@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LanguageGate from "@/components/LanguageGate";
 import { site } from "@/lib/site";
+import { getShopHours } from "@/lib/settings";
 import "../globals.css";
 
 // Body + Devanagari. Mukta covers both scripts; Nepali headings fall back to it.
@@ -59,6 +60,7 @@ export default async function LocaleLayout({
     notFound();
   }
   setRequestLocale(locale);
+  const hours = await getShopHours();
 
   return (
     <html
@@ -68,9 +70,9 @@ export default async function LocaleLayout({
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider>
           <LanguageGate />
-          <Navbar />
+          <Navbar hours={hours} />
           <main className="flex-1">{children}</main>
-          <Footer />
+          <Footer hours={hours} />
         </NextIntlClientProvider>
       </body>
     </html>
