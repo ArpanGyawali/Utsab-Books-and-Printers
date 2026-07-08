@@ -6,6 +6,7 @@ import SectionHeading from "@/components/SectionHeading";
 import { Link } from "@/i18n/navigation";
 import { className, getBooks, getClasses } from "@/lib/books";
 import { waLink } from "@/lib/inquiry";
+import { isStream, STREAM_CLASS_IDS, STREAMS } from "@/lib/streams";
 import type { Book } from "@/lib/supabase/types";
 
 export async function generateMetadata({
@@ -36,11 +37,17 @@ const chipOn = `${chipBase} border-ink bg-ink text-paper`;
 const chipOff = `${chipBase} border-[var(--ink-faint)] bg-paper text-ink hover:bg-paper-shade`;
 
 /** Query object for a filter link — omits empty values so URLs stay clean. */
-function filters(next: { class?: number | null; subject?: string; q?: string }) {
+function filters(next: {
+  class?: number | null;
+  subject?: string;
+  q?: string;
+  stream?: string;
+}) {
   const query: Record<string, string> = {};
   if (next.class) query.class = String(next.class);
   if (next.subject) query.subject = next.subject;
   if (next.q) query.q = next.q;
+  if (next.stream) query.stream = next.stream;
   return { pathname: "/books", query };
 }
 
@@ -67,12 +74,22 @@ export default async function BooksPage({
   const books = classes && hasFilter ? await getBooks(selectedClass?.id ?? null, q || null) : [];
   const offline = classes === null || books === null;
 
+  // Stream filter — class 11/12 only. Default "all streams"; an individual
+  // stream also includes books common to every stream (stream = null).
+  const hasStreams = Boolean(selectedClass && STREAM_CLASS_IDS.has(selectedClass.id));
+  const streamParam = first(sp.stream).trim();
+  const selectedStream = hasStreams && isStream(streamParam) ? streamParam : "";
+
   const subjects =
     selectedClass && books?.length
       ? [...new Set(books.map((b) => b.subject))].sort((a, b) => a.localeCompare(b))
       : [];
   const selectedSubject = subjects.includes(subjectParam) ? subjectParam : "";
-  const results = (books ?? []).filter((b) => !selectedSubject || b.subject === selectedSubject);
+  const results = (books ?? []).filter(
+    (b) =>
+      (!selectedSubject || b.subject === selectedSubject) &&
+      (!selectedStream || b.stream === null || b.stream === selectedStream)
+  );
 
   const classLabelById = new Map(classes?.map((c) => [c.id, className(c, locale)]));
   const fallbackQuery =
@@ -112,6 +129,7 @@ export default async function BooksPage({
       {/* Search — plain GET form, works without JS */}
       <form action={`/${locale}/books`} method="get" className="mt-4 flex max-w-xl gap-2">
         {selectedClass ? <input type="hidden" name="class" value={selectedClass.id} /> : null}
+        {selectedStream ? <input type="hidden" name="stream" value={selectedStream} /> : null}
         <label htmlFor="book-search" className="sr-only">
           {t("searchLabel")}
         </label>
@@ -131,13 +149,47 @@ export default async function BooksPage({
         </button>
       </form>
 
+      {/* Stream chips — only for class 11/12; "all streams" is the default */}
+      {hasStreams ? (
+        <nav aria-label={t("streamLabel")} className="mt-4">
+          <p className="mb-2 text-sm font-medium uppercase tracking-widest text-accent">
+            {t("streamLabel")}
+          </p>
+          <ul className="flex gap-2 overflow-x-auto pb-2">
+            <li>
+              <Link
+                href={filters({ class: selectedClass?.id, subject: selectedSubject, q })}
+                className={selectedStream ? chipOff : chipOn}
+              >
+                {t("allStreams")}
+              </Link>
+            </li>
+            {STREAMS.map((s) => (
+              <li key={s}>
+                <Link
+                  href={filters({
+                    class: selectedClass?.id,
+                    subject: selectedSubject,
+                    q,
+                    stream: s,
+                  })}
+                  className={selectedStream === s ? chipOn : chipOff}
+                >
+                  {t(`streams.${s}`)}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ) : null}
+
       {/* Subject chips for the selected class */}
       {subjects.length > 1 ? (
         <nav aria-label={t("subjectLabel")} className="mt-4">
           <ul className="flex gap-2 overflow-x-auto pb-2">
             <li>
               <Link
-                href={filters({ class: selectedClass?.id, q })}
+                href={filters({ class: selectedClass?.id, q, stream: selectedStream })}
                 className={selectedSubject ? chipOff : chipOn}
               >
                 {t("allSubjects")}
@@ -146,7 +198,7 @@ export default async function BooksPage({
             {subjects.map((s) => (
               <li key={s}>
                 <Link
-                  href={filters({ class: selectedClass?.id, subject: s, q })}
+                  href={filters({ class: selectedClass?.id, subject: s, q, stream: selectedStream })}
                   className={selectedSubject === s ? chipOn : chipOff}
                 >
                   {s}

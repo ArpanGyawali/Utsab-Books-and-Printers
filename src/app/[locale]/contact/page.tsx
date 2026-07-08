@@ -61,9 +61,7 @@ function ContactContent({ hours }: { hours: WeekHours }) {
         <div className="rounded-md bg-paper-shade/70 p-5">
           <h3 className="text-lg font-semibold">{t("landmarkHeading")}</h3>
           <InkAccent variant="underline" className="mt-1 mb-3 h-2.5 w-24 text-accent" />
-          {/* TODO(assets): replace with the owner's real landmark directions */}
           <p className="leading-relaxed text-ink-soft">{t("landmark")}</p>
-          <p className="mt-2 text-xs text-ink-soft/80">{t("landmarkNote")}</p>
 
           <h3 className="mt-6 text-lg font-semibold">{t("addressHeading")}</h3>
           <p className="mt-1 text-ink-soft">

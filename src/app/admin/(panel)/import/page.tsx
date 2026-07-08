@@ -9,8 +9,9 @@ export default async function AdminImportPage() {
       <h1 className="text-2xl font-semibold">Import / export CSV</h1>
       <p className="mt-1 text-sm text-ink-soft">
         Same spreadsheet template as always: class, subject, title_en, title_ne,
-        publisher, price, status, units, expected_arrival. You will see exactly
-        what changes before anything is saved.
+        publisher, price, status, units, expected_arrival, stream (class 11–12
+        only; blank = all streams). You will see exactly what changes before
+        anything is saved.
       </p>
 
       <ImportPanel />

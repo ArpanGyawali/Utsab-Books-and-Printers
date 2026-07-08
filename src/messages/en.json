@@ -54,16 +54,28 @@
     "text": "New session books are arriving — ask about your school's full set!"
   },
   "home": {
-    "photoStrip": {
-      "interior": "Inside the shop — shelves of books and stationery",
-      "stationery": "Stationery section — pens, notebooks and geometry boxes",
-      "printing": "Printing and photocopy corner of the shop"
-    },
     "storyKicker": "Since {year}",
-    "storyHeading": "A neighbourhood shop, run by neighbours",
-    "story": "From our counter in Ranibagiya we have been handing schoolbooks, copies and pens to the same families for years — first for the parents, now for their children. If it is on your school's list, we either have it on the shelf or we will tell you honestly when it arrives.",
-    "storyNote": "— the Utsab Books family",
-    "ownerPhotoAlt": "The owner at the counter of Utsab Books and Printers"
+    "storyHeading": "Serving You Beyond Our Store",
+    "story": "We believe in honest service, trustworthy relationships, fair prices, and making every customer's experience simple and convenient — because our customers always come first.",
+    "storyNote": "If it's on your school's list, we either have it on the shelf or we'll honestly let you know when it will be available.",
+    "ownerCounterAlt": "The owner behind the counter of Utsab Books and Printers",
+    "ownerDeskAlt": "The owner at the printing desk of Utsab Books and Printers",
+    "explore": {
+      "kicker": "Where to next",
+      "heading": "What are you looking for?",
+      "services": {
+        "title": "Our Services",
+        "line": "Printing, photocopy, stationery, books and more — see everything we do."
+      },
+      "books": {
+        "title": "Look for Book",
+        "line": "Check if your school book is on our shelf right now."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "line": "Directions to the shop, opening hours and phone numbers."
+      }
+    }
   },
   "status": {
     "in_stock": "In stock",
@@ -81,6 +93,13 @@
     "allClasses": "All",
     "subjectLabel": "Subject",
     "allSubjects": "All subjects",
+    "streamLabel": "Stream",
+    "allStreams": "All streams",
+    "streams": {
+      "science": "Science",
+      "management": "Management",
+      "arts": "Arts / Humanities"
+    },
     "resultsCount": "{count, plural, =0 {No books found} one {1 book} other {# books}}",
     "priceAsk": "Ask",
     "priceRs": "Rs. {price}",
@@ -122,7 +141,7 @@
           "i3": "Geometry boxes and instruments",
           "i4": "Art and craft supplies",
           "i5": "Exam boards, files and folders",
-          "i6": "School bags and bottles"
+          "i6": "Book covers, stickers, keyrings, bottles and many more"
         }
       },
       "printing": {
@@ -131,11 +150,12 @@
         "photoAlt": "Printer and photocopier in action at the shop",
         "items": {
           "i1": "Photocopy — black & white and colour",
-          "i2": "Print from phone, email or pen drive",
-          "i3": "Lamination (cards to A3)",
+          "i2": "Print quotes can be sent from the form below, or visit the store with your file on WhatsApp, email or pen drive",
+          "i3": "Lamination (cards to A4)",
           "i4": "Spiral and book binding",
           "i5": "Passport-size photos",
-          "i6": "Scan to PDF"
+          "i6": "Scan to PDF",
+          "i7": "Making your documents ready to print"
         }
       },
       "books": {
@@ -147,7 +167,7 @@
           "i2": "Guides and guess papers",
           "i3": "Practice and grammar books",
           "i4": "Dictionaries",
-          "i5": "Children's story books"
+          "i5": "Novels, art books and children's story books"
         },
         "cta": "Check availability in Look for Book"
       },
@@ -185,9 +205,8 @@
   "contact": {
     "title": "Contact Us",
     "kicker": "Come by, call, or message",
-    "landmarkHeading": "How locals find us",
-    "landmark": "On the main road at Ranibagiya, Sainamaina-1 — a short walk from Ranibagiya Chowk. Ask anyone for the books-and-printing shop.",
-    "landmarkNote": "Exact landmark directions are being confirmed with the owner.",
+    "landmarkHeading": "How to find us",
+    "landmark": "Located on the highway — the second shop to the east (right-hand side) of the Sainamaina School gate.",
     "mapTitle": "Map showing Utsab Books and Printers, Ranibagiya, Sainamaina",
     "call": "Call the shop",
     "altPhone": "Also reachable at {phone}",

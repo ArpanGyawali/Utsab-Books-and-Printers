@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useActionState, useState } from "react";
 import Button from "@/components/Button";
 import type { FormState } from "@/app/admin/(panel)/books/actions";
-import type { Book, BookStatus, ClassRow } from "@/lib/supabase/types";
+import { STREAM_CLASS_IDS, STREAMS } from "@/lib/streams";
+import type { Book, BookStatus, ClassRow, Stream } from "@/lib/supabase/types";
 
 /**
  * Create/edit book form. Phone-first: 44px targets, three-segment status
@@ -20,6 +21,12 @@ const statusLabels: Record<BookStatus, string> = {
   in_stock: "In stock",
   arriving: "Arriving",
   out_of_stock: "Out of stock",
+};
+
+const streamLabels: Record<Stream, string> = {
+  science: "Science",
+  management: "Management",
+  arts: "Arts / Humanities",
 };
 
 export default function BookForm({
@@ -38,6 +45,7 @@ export default function BookForm({
   const [state, formAction, pending] = useActionState(action, null);
   const [status, setStatus] = useState<BookStatus>(book?.status ?? "in_stock");
   const [units, setUnits] = useState<number>(book?.units ?? 0);
+  const [classId, setClassId] = useState<number | null>(book?.class_id ?? null);
 
   return (
     <form action={formAction} className="grid gap-4">
@@ -64,6 +72,7 @@ export default function BookForm({
           <select
             name="class_id"
             defaultValue={book?.class_id ?? ""}
+            onChange={(e) => setClassId(Number.parseInt(e.target.value, 10) || null)}
             required
             className={inputCls}
           >
@@ -88,6 +97,23 @@ export default function BookForm({
           />
         </label>
       </div>
+
+      {classId !== null && STREAM_CLASS_IDS.has(classId) ? (
+        <label className="block">
+          <span className="mb-1 block text-sm font-medium">Stream</span>
+          <select name="stream" defaultValue={book?.stream ?? ""} className={inputCls}>
+            <option value="">All streams</option>
+            {STREAMS.map((s) => (
+              <option key={s} value={s}>
+                {streamLabels[s]}
+              </option>
+            ))}
+          </select>
+          <span className="mt-1 block text-xs text-ink-soft">
+            &ldquo;All streams&rdquo; = compulsory subjects every stream buys.
+          </span>
+        </label>
+      ) : null}
 
       <label className="block">
         <span className="mb-1 block text-sm font-medium">Title (English)</span>

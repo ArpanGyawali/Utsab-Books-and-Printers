@@ -17,6 +17,9 @@ export type Json =
 
 export type BookStatus = "in_stock" | "out_of_stock" | "arriving";
 
+/** Class 11/12 stream; null = common to all streams (and classes below 11). */
+export type Stream = "science" | "management" | "arts";
+
 export interface Database {
   public: {
     Tables: {
@@ -78,6 +81,7 @@ export interface Database {
           status: BookStatus;
           units: number;
           expected_arrival: string | null;
+          stream: Stream | null;
           /** Path inside the public `covers` storage bucket; null = placeholder. */
           cover_path: string | null;
           updated_at: string;
@@ -96,6 +100,7 @@ export interface Database {
           status?: BookStatus;
           units?: number;
           expected_arrival?: string | null;
+          stream?: Stream | null;
           cover_path?: string | null;
           updated_at?: string;
         };
@@ -111,6 +116,7 @@ export interface Database {
           status?: BookStatus;
           units?: number;
           expected_arrival?: string | null;
+          stream?: Stream | null;
           cover_path?: string | null;
           updated_at?: string;
         };
@@ -138,6 +144,8 @@ export interface Database {
           phone: string;
           created_at: string;
           notified: boolean;
+          /** Last time the owner tapped Notify; purged 5 days later. */
+          notified_at: string | null;
         };
         Insert: {
           id?: string;
@@ -145,6 +153,7 @@ export interface Database {
           phone: string;
           created_at?: string;
           notified?: boolean;
+          notified_at?: string | null;
         };
         Update: {
           id?: string;
@@ -152,6 +161,7 @@ export interface Database {
           phone?: string;
           created_at?: string;
           notified?: boolean;
+          notified_at?: string | null;
         };
         Relationships: [
           {

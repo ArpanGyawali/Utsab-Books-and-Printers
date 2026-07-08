@@ -1,4 +1,5 @@
-import type { BookStatus } from "@/lib/supabase/types";
+import { isStream, STREAM_CLASS_IDS } from "@/lib/streams";
+import type { BookStatus, Stream } from "@/lib/supabase/types";
 
 /**
  * Parsing + validation for the admin book form (create and edit share it).
@@ -26,6 +27,7 @@ export type BookColumns = {
   status: BookStatus;
   units: number;
   expected_arrival: string | null;
+  stream: Stream | null;
 };
 
 export function parseBookForm(
@@ -63,6 +65,12 @@ export function parseBookForm(
     return { ok: false, error: "Expected arrival must be a date." };
   }
 
+  // Stream only exists for class 11/12; empty value = all streams.
+  const rawStream = str(fd, "stream");
+  if (rawStream && !isStream(rawStream)) return { ok: false, error: "Pick a valid stream." };
+  const stream =
+    STREAM_CLASS_IDS.has(class_id) && rawStream && isStream(rawStream) ? rawStream : null;
+
   return {
     ok: true,
     data: {
@@ -76,6 +84,7 @@ export function parseBookForm(
       status,
       units,
       expected_arrival: status === "arriving" && arrival ? arrival : null,
+      stream,
     },
   };
 }

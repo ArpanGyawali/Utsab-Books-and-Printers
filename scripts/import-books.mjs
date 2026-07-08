@@ -6,7 +6,7 @@
  *   npm run db:import -- data/books.csv    # imports a specific file
  *
  * Template columns (see data/README.md):
- *   class,subject,title_en,title_ne,publisher,price,status,units,expected_arrival
+ *   class,subject,title_en,title_ne,publisher,price,status,units,expected_arrival,stream
  *
  * Upserts on the natural key (school_id, class_id, subject, title_en) into the
  * single active school, so re-importing an updated spreadsheet is safe.
@@ -18,6 +18,9 @@ import Papa from "papaparse";
 
 const CSV_PATH = process.argv[2] ?? "data/books.sample.csv";
 const STATUSES = new Set(["in_stock", "out_of_stock", "arriving"]);
+// Class 11/12 (ids 14/15) only; blank = all streams (matches src/lib/streams.ts).
+const STREAMS = new Set(["science", "management", "arts"]);
+const STREAM_CLASS_IDS = new Set([14, 15]);
 
 // Must match the seeded `classes` rows (0002_seed.sql).
 const CLASS_IDS = {
@@ -87,6 +90,12 @@ rawRows.forEach((r, i) => {
   if (arrival && !/^\d{4}-\d{2}-\d{2}$/.test(arrival))
     return errors.push(`line ${line}: expected_arrival must be YYYY-MM-DD, got "${arrival}"`);
 
+  const stream = (r.stream ?? "").toLowerCase() || null;
+  if (stream && !STREAMS.has(stream))
+    return errors.push(`line ${line}: stream must be science, management or arts (or blank), got "${r.stream}"`);
+  if (stream && !STREAM_CLASS_IDS.has(classId))
+    return errors.push(`line ${line}: stream only applies to class 11 and 12`);
+
   rows.push({
     school_id: school.id,
     class_id: classId,
@@ -98,6 +107,7 @@ rawRows.forEach((r, i) => {
     status: r.status,
     units,
     expected_arrival: arrival,
+    stream,
   });
 });
 

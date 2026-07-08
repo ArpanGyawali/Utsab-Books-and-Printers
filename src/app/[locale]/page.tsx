@@ -8,6 +8,7 @@ import RuledDivider from "@/components/RuledDivider";
 import SectionHeading from "@/components/SectionHeading";
 import StampLogo from "@/components/StampLogo";
 import LocalBusinessJsonLd from "@/components/LocalBusinessJsonLd";
+import { Link } from "@/i18n/navigation";
 import { site, type WeekHours } from "@/lib/site";
 import { getShopHours } from "@/lib/settings";
 
@@ -22,10 +23,10 @@ export default async function HomePage({
   return <HomeContent hours={hours} />;
 }
 
-const stripPhotos = [
-  { src: "/images/placeholders/shop-interior.svg", key: "interior" },
-  { src: "/images/placeholders/stationery.svg", key: "stationery" },
-  { src: "/images/placeholders/printing.svg", key: "printing" },
+const exploreLinks = [
+  { href: "/services", key: "services" },
+  { href: "/books", key: "books" },
+  { href: "/contact", key: "contact" },
 ] as const;
 
 function HomeContent({ hours }: { hours: WeekHours }) {
@@ -37,11 +38,10 @@ function HomeContent({ hours }: { hours: WeekHours }) {
     <>
       <LocalBusinessJsonLd hours={hours} />
 
-      {/* Hero — full-bleed shop photo with ink overlay.
-          TODO(assets): swap placeholder for the real exterior photo. */}
+      {/* Hero — full-bleed shop-front photo with ink overlay. */}
       <section className="relative isolate flex min-h-[70vh] items-center justify-center overflow-hidden">
         <Image
-          src="/images/placeholders/shop-exterior.svg"
+          src="/images/storefront.jpg"
           alt={t("photoAlt")}
           fill
           priority
@@ -81,30 +81,7 @@ function HomeContent({ hours }: { hours: WeekHours }) {
 
       <BannerStrip />
 
-      {/* Three-photo strip. TODO(assets): swap for real shop photos. */}
-      <Container className="py-10">
-        <ul className="grid gap-3 sm:grid-cols-3">
-          {stripPhotos.map(({ src, key }) => (
-            <li
-              key={key}
-              className="relative aspect-[8/5] overflow-hidden rounded-md shadow-[var(--shadow-card)]"
-            >
-              <Image
-                src={src}
-                alt={tHome(`photoStrip.${key}`)}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 100vw, 33vw"
-              />
-            </li>
-          ))}
-        </ul>
-      </Container>
-
-      <RuledDivider />
-
-      {/* Shop story. TODO(assets): replace placeholder with the owner's own
-          words (Nepali first, then translated — ASSETS.md §3). */}
+      {/* Shop story — the owners, in their own words. */}
       <Container className="py-12">
         <div className="grid items-center gap-8 sm:grid-cols-[3fr_2fr]">
           <div>
@@ -121,16 +98,62 @@ function HomeContent({ hours }: { hours: WeekHours }) {
               {tBrand("tagline")}
             </p>
           </div>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-md shadow-[var(--shadow-card)]">
-            <Image
-              src="/images/placeholders/owner.svg"
-              alt={tHome("ownerPhotoAlt")}
-              fill
-              className="object-cover"
-              sizes="(max-width: 640px) 100vw, 40vw"
-            />
+          <div className="grid gap-3">
+            <div className="relative aspect-[3/4] overflow-hidden rounded-md shadow-[var(--shadow-card)]">
+              <Image
+                src="/images/owner2.jpg"
+                alt={tHome("ownerDeskAlt")}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 100vw, 40vw"
+              />
+            </div>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-md shadow-[var(--shadow-card)]">
+              <Image
+                src="/images/owner1.jpg"
+                alt={tHome("ownerCounterAlt")}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 100vw, 40vw"
+              />
+            </div>
           </div>
         </div>
+      </Container>
+
+      <RuledDivider />
+
+      {/* Quick links — the same three destinations as the navbar, so visitors
+          who scrolled past it still land somewhere useful. */}
+      <Container className="py-12">
+        <SectionHeading kicker={tHome("explore.kicker")}>
+          {tHome("explore.heading")}
+        </SectionHeading>
+        <ul className="max-w-2xl divide-y divide-[var(--ink-faint)] border-y border-[var(--ink-faint)]">
+          {exploreLinks.map(({ href, key }) => (
+            <li key={key}>
+              <Link
+                href={href}
+                className="group flex items-center justify-between gap-4 py-4 no-underline"
+              >
+                <span>
+                  <span className="block text-lg font-semibold text-ink transition-colors duration-150 group-hover:text-accent">
+                    {tHome(`explore.${key}.title`)}
+                  </span>
+                  <span className="mt-0.5 block text-sm text-ink-soft">
+                    {tHome(`explore.${key}.line`)}
+                  </span>
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="shrink-0 text-xl text-ink-soft transition-colors duration-150 group-hover:text-accent"
+                >
+                  →
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </Container>
     </>
   );

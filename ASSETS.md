@@ -22,9 +22,11 @@ Shoot on a phone in daylight. Landscape orientation unless noted. No filters —
 we'll color-grade consistently in code/editing.
 
 ### Must-have (Phase 1 — hero & identity)
-- [ ] **Shop front exterior**, straight-on, signboard clearly readable (hero candidate)
-- [ ] **Interior wide shot** — shelves of books/stationery from the entrance
-- [ ] **Owner at the counter** (or family/staff) — natural pose, mid-shot
+- [x] **Shop front exterior** — received 2026-07-08, live as hero
+      (`public/images/storefront.jpg`; original in `data/photos-originals/`)
+- [ ] ~~Interior wide shot~~ — dropped; home photo strip removed 2026-07-08
+- [x] **Owner at the counter** — two photos received 2026-07-08, live on home
+      story section (`public/images/owner1.jpg` counter, `owner2.jpg` print desk)
 
 ### Services section (one strong photo per service)
 - [ ] Stationery shelves close-up (pens/copies/geometry boxes — colorful section)
@@ -59,8 +61,9 @@ Aim for at least 2000px on the long edge.
 ## 4. Business Facts
 
 - [x] Full address: **Ranibagiya, Sainamaina-1, Rupandehi** (confirmed)
-- [ ] Local landmark directions ("50m from ___ Chowk, opposite ___") in both
-      languages — this powers the creative map section
+- [x] Local landmark directions — confirmed 2026-07-08: on the highway, second
+      shop east (right-hand side) of the Sainamaina School gate / "राजमार्गमै —
+      सैनामैना स्कुल गेटबाट पूर्वतिर (दायाँ साइड) दोस्रो सटर"; live on /contact
 - [x] Google Maps pin/share link: <https://share.google/PpisejsuDEO8yVQ5L>
 - [x] **Primary phone number**: **+977 9851017951** (WhatsApp + calls; Viber unconfirmed)
 - [x] Secondary phone: **+977 9841254514**
@@ -72,8 +75,9 @@ Aim for at least 2000px on the long edge.
 ## 5. Book Inventory Data (the real work — start early, Phase 2 blocker)
 
 - [ ] **The school**: name (EN + NE) of the one school we launch with
-- [ ] Class list confirmation: Nursery, LKG, UKG, 1–12 (confirm class 11–12 streams
-      if applicable: Science/Management/etc.)
+- [x] Class list confirmation: Nursery, LKG, UKG, 1–12 — class 11/12 stream
+      support added 2026-07-08 (science / management / arts, blank = all streams;
+      optional `stream` CSV column)
 - [ ] **Full book list** in the spreadsheet template (we provide the template):
       `class | subject | title_en | title_ne | publisher | price | status | units | expected_arrival`
       - status one of: `in_stock` / `out_of_stock` / `arriving`

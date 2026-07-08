@@ -14,7 +14,7 @@ import PrintQuoteForm from "./PrintQuoteForm";
 
 const TABS = [
   { key: "stationery", items: 6, photo: "/images/placeholders/stationery.svg" },
-  { key: "printing", items: 6, photo: "/images/placeholders/printing.svg" },
+  { key: "printing", items: 7, photo: "/images/placeholders/printing.svg" },
   { key: "books", items: 5, photo: "/images/placeholders/books.svg" },
   { key: "other", items: 4, photo: "/images/placeholders/services-other.svg" },
 ] as const;

@@ -25,7 +25,14 @@ export default function BookCard({
   const locale = useLocale();
   const t = useTranslations("books");
   const title = bookTitle(book, locale);
-  const meta = [classLabel, book.subject, book.publisher].filter(Boolean).join(" · ");
+  const meta = [
+    classLabel,
+    book.stream ? t(`streams.${book.stream}`) : "",
+    book.subject,
+    book.publisher,
+  ]
+    .filter(Boolean)
+    .join(" · ");
   const cover = coverUrl(book);
 
   return (

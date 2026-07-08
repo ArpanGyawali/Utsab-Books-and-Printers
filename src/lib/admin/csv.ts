@@ -1,6 +1,7 @@
 import Papa from "papaparse";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { BookStatus, Database } from "@/lib/supabase/types";
+import { isStream, STREAM_CLASS_IDS } from "@/lib/streams";
+import type { BookStatus, Database, Stream } from "@/lib/supabase/types";
 
 /**
  * CSV parsing/diffing for the admin import screen. Same template, class map,
@@ -8,7 +9,8 @@ import type { BookStatus, Database } from "@/lib/supabase/types";
  * keep the two in sync if the template ever changes.
  *
  * Template columns:
- *   class,subject,title_en,title_ne,publisher,price,status,units,expected_arrival
+ *   class,subject,title_en,title_ne,publisher,price,status,units,expected_arrival,stream
+ * (stream: science/management/arts, class 11–12 only; blank = all streams)
  */
 
 const STATUSES = new Set<BookStatus>(["in_stock", "out_of_stock", "arriving"]);
@@ -40,6 +42,7 @@ export type CsvBookRow = {
   status: BookStatus;
   units: number;
   expected_arrival: string | null;
+  stream: Stream | null;
 };
 
 export function parseBooksCsv(
@@ -77,6 +80,14 @@ export function parseBooksCsv(
         `line ${line}: expected_arrival must be YYYY-MM-DD, got "${arrival}"`
       );
 
+    const rawStream = (r.stream ?? "").toLowerCase();
+    if (rawStream && !isStream(rawStream))
+      return errors.push(
+        `line ${line}: stream must be science, management or arts (or blank), got "${r.stream}"`
+      );
+    if (rawStream && !STREAM_CLASS_IDS.has(classId))
+      return errors.push(`line ${line}: stream only applies to class 11 and 12`);
+
     rows.push({
       school_id: schoolId,
       class_id: classId,
@@ -88,6 +99,7 @@ export function parseBooksCsv(
       status: r.status as BookStatus,
       units,
       expected_arrival: arrival,
+      stream: isStream(rawStream) ? rawStream : null,
     });
   });
 
@@ -130,6 +142,7 @@ const COMPARED = [
   "status",
   "units",
   "expected_arrival",
+  "stream",
 ] as const;
 
 export async function previewBooksImport(
@@ -150,7 +163,7 @@ export async function previewBooksImport(
 
   const { data: existing, error } = await supabase
     .from("books")
-    .select("class_id, subject, title_en, title_ne, publisher, price, status, units, expected_arrival")
+    .select("class_id, subject, title_en, title_ne, publisher, price, status, units, expected_arrival, stream")
     .eq("school_id", schoolId);
   if (error) {
     preview.errors.push(`could not read current books: ${error.message}`);
@@ -196,6 +209,7 @@ export function booksToCsv(
     status: string;
     units: number;
     expected_arrival: string | null;
+    stream: string | null;
   }[]
 ): string {
   return Papa.unparse(
@@ -209,6 +223,7 @@ export function booksToCsv(
       status: b.status,
       units: b.units,
       expected_arrival: b.expected_arrival ?? "",
+      stream: b.stream ?? "",
     })),
     {
       columns: [
@@ -221,6 +236,7 @@ export function booksToCsv(
         "status",
         "units",
         "expected_arrival",
+        "stream",
       ],
     }
   );
