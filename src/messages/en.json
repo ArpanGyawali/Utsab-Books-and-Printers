@@ -54,10 +54,11 @@
     "text": "New session books are arriving — ask about your school's full set!"
   },
   "home": {
-    "storyKicker": "Since {year}",
+    "storyKicker": "In our owner's words",
     "storyHeading": "Serving You Beyond Our Store",
     "story": "We believe in honest service, trustworthy relationships, fair prices, and making every customer's experience simple and convenient — because our customers always come first.",
     "storyNote": "If it's on your school's list, we either have it on the shelf or we'll honestly let you know when it will be available.",
+    "storySignature": "— The owner, serving you since {year}",
     "ownerCounterAlt": "The owner behind the counter of Utsab Books and Printers",
     "ownerDeskAlt": "The owner at the printing desk of Utsab Books and Printers",
     "explore": {

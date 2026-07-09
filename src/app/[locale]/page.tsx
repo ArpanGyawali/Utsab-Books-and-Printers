@@ -93,15 +93,22 @@ function HomeContent({ hours }: { hours: WeekHours }) {
       <Container className="py-12">
         <div className="grid items-center gap-8 sm:grid-cols-[3fr_2fr]">
           <div>
-            <SectionHeading
-              kicker={tHome("storyKicker", { year: establishedYear })}
-            >
+            <SectionHeading kicker={tHome("storyKicker")}>
               {tHome("storyHeading")}
             </SectionHeading>
-            <p className="max-w-prose leading-relaxed text-ink-soft">
-              {tHome("story")}
-            </p>
-            <p className="mt-3 font-medium text-ink">{tHome("storyNote")}</p>
+            <blockquote className="relative max-w-prose pl-6">
+              <span
+                aria-hidden="true"
+                className="absolute -top-2 left-0 font-heading text-5xl leading-none text-accent"
+              >
+                &ldquo;
+              </span>
+              <p className="leading-relaxed text-ink-soft">{tHome("story")}</p>
+              <p className="mt-3 font-medium text-ink">{tHome("storyNote")}</p>
+              <footer className="mt-4 text-sm italic text-ink-soft">
+                {tHome("storySignature", { year: establishedYear })}
+              </footer>
+            </blockquote>
             <p className="mx-auto mt-8 max-w-xl text-center text-lg italic text-ink-soft sm:text-left">
               {tBrand("tagline")}
             </p>
