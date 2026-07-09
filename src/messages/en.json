@@ -64,8 +64,12 @@
     "videos": {
       "heading": "Glimpses from the counter",
       "play": "Play video: {caption}",
-      "v1": { "caption": "A namaste from the shop" },
-      "v2": { "caption": "Covering copies at the counter" }
+      "v1": {
+        "caption": "A namaste from the shop"
+      },
+      "v2": {
+        "caption": "Covering copies at the counter"
+      }
     },
     "explore": {
       "kicker": "Where to next",
@@ -267,20 +271,11 @@
     "closed": "Closed",
     "copyright": "© {year} Utsab Books and Printers, Ranibagiya, Sainamaina-1, Rupandehi"
   },
-  "stub": {
-    "comingSoon": "This page is being prepared — it will be ready very soon.",
-    "backHome": "Back to home",
-    "services": {
-      "title": "Our Services",
-      "note": "Stationery, printing, books and more — full details are on the way."
-    },
-    "books": {
-      "title": "Look for Book",
-      "note": "Soon you will be able to search your child's school books here and see live availability."
-    },
-    "contact": {
-      "title": "Contact Us",
-      "note": "Map, directions and phone numbers are coming here soon."
-    }
+  "notFound": {
+    "kicker": "404",
+    "title": "This page could not be found",
+    "body": "The page may be missing — but the book you're looking for might not be! Try a search.",
+    "cta": "Look for a book",
+    "home": "Back to home"
   }
 }

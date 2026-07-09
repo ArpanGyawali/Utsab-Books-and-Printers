@@ -1,4 +1,5 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { after, NextResponse, type NextRequest } from "next/server";
+import { logEvent } from "@/lib/analytics";
 import { supabaseServer } from "@/lib/supabase/server";
 
 /**
@@ -52,5 +53,6 @@ export async function POST(request: NextRequest) {
     console.error("[quote] insert failed:", error.message);
     return NextResponse.json({ ok: false, error: "server" }, { status: 500 });
   }
+  after(() => logEvent("quote_submit", { binding }));
   return NextResponse.json({ ok: true });
 }

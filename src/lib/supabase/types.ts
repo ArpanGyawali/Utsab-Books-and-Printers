@@ -187,6 +187,28 @@ export interface Database {
         Update: { key?: string; value?: Json };
         Relationships: [];
       };
+      events: {
+        Row: {
+          id: number;
+          type: string;
+          locale: string | null;
+          data: Json;
+          created_at: string;
+        };
+        Insert: {
+          type: string;
+          locale?: string | null;
+          data?: Json;
+          created_at?: string;
+        };
+        Update: {
+          type?: string;
+          locale?: string | null;
+          data?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       print_quotes: {
         Row: {
           id: string;

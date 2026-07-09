@@ -1,4 +1,5 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { after, NextResponse, type NextRequest } from "next/server";
+import { logEvent } from "@/lib/analytics";
 import { normalizeNepaliMobile } from "@/lib/phone";
 import { supabaseServer } from "@/lib/supabase/server";
 
@@ -51,5 +52,6 @@ export async function POST(request: NextRequest) {
     console.error("[notify] insert failed:", error.message);
     return NextResponse.json({ ok: false, error: "server" }, { status: 500 });
   }
+  after(() => logEvent("notify_submit", { book_id: bookId }));
   return NextResponse.json({ ok: true });
 }

@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { after } from "next/server";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import BookCard from "@/components/BookCard";
 import Container from "@/components/Container";
+import InquireLink from "@/components/InquireLink";
 import SectionHeading from "@/components/SectionHeading";
 import { Link } from "@/i18n/navigation";
+import { logEvent } from "@/lib/analytics";
 import { className, getBooks, getClasses } from "@/lib/books";
 import { GENRES, isGenre } from "@/lib/genres";
 import { waLink } from "@/lib/inquiry";
@@ -114,6 +117,22 @@ export default async function BooksPage({
     book.class_id !== null
       ? classLabelById.get(book.class_id) ?? ""
       : t(`genres.${book.genre ?? "other"}`);
+  // What people search is the monthly report's core data — log the query
+  // (not chip-only navigations) after the response is sent.
+  if (q && !offline) {
+    after(() =>
+      logEvent(
+        "search",
+        {
+          q,
+          class: otherSelected ? "other" : selectedClass ? className(selectedClass, "en") : null,
+          results: results.length,
+        },
+        locale
+      )
+    );
+  }
+
   const fallbackQuery =
     q ||
     [
@@ -342,13 +361,13 @@ export default async function BooksPage({
       ) : null}
 
       {offline ? (
-        <AskInstead heading={t("offline")} cta={t("noResultsCta")} message={t("noResultsWaTemplate", { query: fallbackQuery || "…" })} />
+        <AskInstead heading={t("offline")} cta={t("noResultsCta")} message={t("noResultsWaTemplate", { query: fallbackQuery || "…" })} query={fallbackQuery} />
       ) : !hasFilter ? (
         <p className="mt-10 rounded-md border-[1.5px] border-dashed border-[var(--ink-faint)] p-6 text-center text-ink-soft">
           {t("promptEmpty")}
         </p>
       ) : results.length === 0 ? (
-        <AskInstead heading={t("noResults")} cta={t("noResultsCta")} message={t("noResultsWaTemplate", { query: fallbackQuery })} />
+        <AskInstead heading={t("noResults")} cta={t("noResultsCta")} message={t("noResultsWaTemplate", { query: fallbackQuery })} query={fallbackQuery} />
       ) : (
         <section className="mt-8">
           <p role="status" className="text-sm font-medium text-ink-soft">
@@ -362,14 +381,14 @@ export default async function BooksPage({
           {/* Never a dead end — generic escape hatch under every result list */}
           <p className="mt-8 text-sm text-ink-soft">
             {t("noResults")}{" "}
-            <a
+            <InquireLink
               href={waLink(t("noResultsWaTemplate", { query: fallbackQuery }))}
-              target="_blank"
-              rel="noopener noreferrer"
+              title={fallbackQuery}
+              source="results_footer"
               className="font-medium text-ink underline decoration-ink-soft/40 underline-offset-2"
             >
               {t("noResultsCta")}
-            </a>
+            </InquireLink>
           </p>
         </section>
       )}
@@ -377,18 +396,28 @@ export default async function BooksPage({
   );
 }
 
-function AskInstead({ heading, cta, message }: { heading: string; cta: string; message: string }) {
+function AskInstead({
+  heading,
+  cta,
+  message,
+  query,
+}: {
+  heading: string;
+  cta: string;
+  message: string;
+  query: string;
+}) {
   return (
     <div className="mt-10 rounded-md border-[1.5px] border-dashed border-[var(--ink-faint)] p-6 text-center">
       <p className="text-ink-soft">{heading}</p>
-      <a
+      <InquireLink
         href={waLink(message)}
-        target="_blank"
-        rel="noopener noreferrer"
+        title={query}
+        source="no_results"
         className="mt-4 inline-flex min-h-11 items-center rounded-sm border border-accent-deep bg-accent px-5 py-2 font-medium text-paper shadow-[var(--shadow-card)] transition-colors duration-150 hover:bg-accent-deep"
       >
         {cta}
-      </a>
+      </InquireLink>
     </div>
   );
 }

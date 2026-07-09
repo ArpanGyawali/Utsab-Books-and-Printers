@@ -61,7 +61,6 @@ export default function Footer({ hours }: { hours: WeekHours }) {
         <div>
           <h2 className="mb-2 text-base font-semibold">{t("contactHeading")}</h2>
           <InkAccent variant="underline" className="mb-3 h-2 w-16 text-accent" />
-          {/* TODO(assets): placeholder phone — swap for the real number */}
           <p className="text-sm text-ink-soft">
             <a href={`tel:${site.phone}`} className="font-medium text-ink">
               {site.phone}

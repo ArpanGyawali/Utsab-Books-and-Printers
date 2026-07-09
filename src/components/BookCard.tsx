@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import Badge from "./Badge";
+import InquireLink from "./InquireLink";
 import NotifyMeForm from "./NotifyMeForm";
 import { bookTitle, coverUrl } from "@/lib/books";
 import { viberLink, waLink } from "@/lib/inquiry";
@@ -84,14 +85,15 @@ export default function BookCard({
         </div>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <a
+          <InquireLink
             href={waLink(t("waTemplate", { title, class: classLabel }))}
-            target="_blank"
-            rel="noopener noreferrer"
+            title={title}
+            bookClass={classLabel}
+            source="book_card"
             className="inline-flex min-h-11 items-center rounded-sm border border-accent-deep bg-accent px-4 py-1.5 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-deep"
           >
             {t("inquire")}
-          </a>
+          </InquireLink>
           <a
             href={viberLink()}
             className="inline-flex min-h-11 items-center rounded-sm border-[1.5px] border-ink px-4 py-1.5 text-sm font-medium text-ink transition-colors duration-150 hover:bg-paper-shade"
