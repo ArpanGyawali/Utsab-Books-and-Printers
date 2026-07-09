@@ -34,6 +34,8 @@ try {
        applied_at timestamptz not null default now()
      )`
   );
+  // Keep the API roles out of it on a fresh database too (see 0008).
+  await client.query("alter table public._migrations enable row level security");
 
   const applied = new Set(
     (await client.query("select name from public._migrations")).rows.map((r) => r.name)
