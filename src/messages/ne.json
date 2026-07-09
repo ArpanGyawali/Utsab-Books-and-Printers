@@ -90,6 +90,8 @@
     "searchLabel": "किताब, विषय वा प्रकाशकबाट खोज्नुहोस्",
     "searchPlaceholder": "जस्तै: मेरो नेपाली किताब, गणित, साझा…",
     "searchSubmit": "खोज्नुहोस्",
+    "activeSearch": "“{query}” को नतिजा देखाइएको छ।",
+    "clearSearch": "खोज हटाउनुहोस्",
     "classLabel": "कक्षा",
     "allClasses": "सबै",
     "subjectLabel": "विषय",

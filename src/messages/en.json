@@ -90,6 +90,8 @@
     "searchLabel": "Search by book, subject or publisher",
     "searchPlaceholder": "e.g. English Made Easy, Maths, Sajha…",
     "searchSubmit": "Search",
+    "activeSearch": "Showing results for “{query}”.",
+    "clearSearch": "Clear search",
     "classLabel": "Class",
     "allClasses": "All",
     "subjectLabel": "Subject",

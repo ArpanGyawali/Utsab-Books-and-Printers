@@ -137,6 +137,7 @@ export default async function BooksPage({
           id="book-search"
           name="q"
           type="search"
+          key={q} // remount on navigation so the box always shows the active search
           defaultValue={q}
           placeholder={t("searchPlaceholder")}
           className="w-full rounded-sm border-[1.5px] border-[var(--ink-faint)] bg-paper px-3 py-2.5 text-ink placeholder:text-ink-soft/60 focus-visible:border-ink"
@@ -148,6 +149,24 @@ export default async function BooksPage({
           {t("searchSubmit")}
         </button>
       </form>
+
+      {/* Active-search token — the input's native ✕ only clears the box, not the
+          URL, so give the real filter a visible one-click way out */}
+      {q ? (
+        <p className="mt-2 text-sm text-ink-soft">
+          {t("activeSearch", { query: q })}{" "}
+          <Link
+            href={filters({
+              class: selectedClass?.id,
+              subject: selectedSubject,
+              stream: selectedStream,
+            })}
+            className="font-medium text-ink underline decoration-ink-soft/40 underline-offset-2"
+          >
+            {t("clearSearch")}
+          </Link>
+        </p>
+      ) : null}
 
       {/* Stream chips — only for class 11/12; "all streams" is the default */}
       {hasStreams ? (
