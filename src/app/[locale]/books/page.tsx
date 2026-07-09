@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { after } from "next/server";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import BookCard from "@/components/BookCard";
+import ClassSetCard from "@/components/ClassSetCard";
 import Container from "@/components/Container";
 import InquireLink from "@/components/InquireLink";
 import SectionHeading from "@/components/SectionHeading";
@@ -110,6 +111,20 @@ export default async function BooksPage({
       (!selectedStream || b.stream === null || b.stream === selectedStream) &&
       (!selectedGenre || b.genre === selectedGenre)
   );
+
+  // "Complete set" = every book of the class (subject chips don't narrow it);
+  // for 11/12 it needs a chosen stream — a cross-stream set would double-count.
+  const setBooks =
+    selectedClass && !q && (!hasStreams || selectedStream)
+      ? (books ?? []).filter(
+          (b) => !selectedStream || b.stream === null || b.stream === selectedStream
+        )
+      : [];
+  const setLabel = selectedClass
+    ? [className(selectedClass, locale), selectedStream ? t(`streams.${selectedStream}`) : ""]
+        .filter(Boolean)
+        .join(" · ")
+    : "";
 
   const classLabelById = new Map(classes?.map((c) => [c.id, className(c, locale)]));
   /** Card badge + WhatsApp text: class for textbooks, genre for the rest. */
@@ -370,6 +385,7 @@ export default async function BooksPage({
         <AskInstead heading={t("noResults")} cta={t("noResultsCta")} message={t("noResultsWaTemplate", { query: fallbackQuery })} query={fallbackQuery} />
       ) : (
         <section className="mt-8">
+          {setBooks.length > 1 ? <ClassSetCard label={setLabel} books={setBooks} /> : null}
           <p role="status" className="text-sm font-medium text-ink-soft">
             {t("resultsCount", { count: results.length })}
           </p>

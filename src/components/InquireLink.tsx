@@ -18,7 +18,7 @@ export default function InquireLink({
   href: string;
   title?: string;
   bookClass?: string;
-  source: "book_card" | "no_results" | "results_footer";
+  source: "book_card" | "no_results" | "results_footer" | "class_set";
   className?: string;
   children: React.ReactNode;
 }) {

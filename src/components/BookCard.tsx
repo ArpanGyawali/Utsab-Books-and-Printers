@@ -4,6 +4,7 @@ import Badge from "./Badge";
 import InquireLink from "./InquireLink";
 import NotifyMeForm from "./NotifyMeForm";
 import { bookTitle, coverUrl } from "@/lib/books";
+import { toBS } from "@/lib/bs-date";
 import { viberLink, waLink } from "@/lib/inquiry";
 import type { Book } from "@/lib/supabase/types";
 
@@ -35,6 +36,16 @@ export default function BookCard({
     .filter(Boolean)
     .join(" · ");
   const cover = coverUrl(book);
+
+  // NE locale shows arrivals in B.S. ("असार 25" — Arabic numerals per SKILL.md);
+  // falls back to the A.D. format if the date is outside the B.S. table.
+  let arrivalLabel = "";
+  if (book.expected_arrival) {
+    const bs = locale === "ne" ? toBS(new Date(`${book.expected_arrival}T00:00:00`)) : null;
+    arrivalLabel = bs
+      ? `${t(`bsMonths.m${bs.monthIndex + 1}`)} ${bs.day}`
+      : formatArrival(book.expected_arrival, locale);
+  }
 
   return (
     <li className="flex gap-3.5 rounded-md border border-[var(--ink-faint)] bg-paper p-4 shadow-[var(--shadow-card)]">
@@ -79,7 +90,7 @@ export default function BookCard({
           ) : null}
           {book.status === "arriving" && book.expected_arrival ? (
             <p className="text-sm font-medium text-arriving">
-              {t("arrivingOn", { date: formatArrival(book.expected_arrival, locale) })}
+              {t("arrivingOn", { date: arrivalLabel })}
             </p>
           ) : null}
         </div>
