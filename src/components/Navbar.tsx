@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import Container from "./Container";
@@ -18,7 +19,20 @@ export default function Navbar({ hours }: { hours: WeekHours }) {
   return (
     <header className="border-b border-[var(--ink-faint)] bg-paper/95">
       <Container className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3">
-        <Link href="/" className="mr-auto no-underline" aria-label={t("home")}>
+        <Link
+          href="/"
+          className="mr-auto flex items-center gap-2.5 no-underline"
+          aria-label={t("home")}
+        >
+          {/* The shop's round seal; decorative next to the wordmark stamp */}
+          <Image
+            src="/images/logo.png"
+            alt=""
+            width={40}
+            height={40}
+            sizes="40px"
+            className="h-10 w-10 shrink-0 select-none"
+          />
           <StampLogo size="sm" />
         </Link>
 
