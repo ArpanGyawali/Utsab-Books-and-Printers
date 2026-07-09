@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import BookCard from "@/components/BookCard";
 import Container from "@/components/Container";
@@ -130,44 +129,35 @@ export default async function BooksPage({
       <SectionHeading kicker={t("kicker")}>{t("title")}</SectionHeading>
       <p className="max-w-prose text-ink-soft">{t("intro")}</p>
 
-      {/* The school's official lists — sheets pinned right on the page;
-          tap one to open the full photo/PDF */}
+      {/* The school's official lists — caption cards that open the file itself */}
       {booklist?.files.length ? (
         <section className="mt-6" aria-label={t("list.heading")}>
           <h3 className="text-sm font-medium uppercase tracking-widest text-accent">
             {t("list.heading")}
           </h3>
-          <ul className="mt-3 flex gap-4 overflow-x-auto pb-2">
+          <ul className="mt-3 flex max-w-xl flex-wrap gap-3">
             {booklist.files.map((file, i) => {
               const url = booklistFileUrl(file);
               if (!url) return null;
-              const label = file.label || t("list.fileN", { n: i + 1 });
               return (
-                <li key={file.path} className="shrink-0">
+                <li key={file.path}>
                   <a
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group block w-28 no-underline"
+                    className="group flex min-h-11 items-center gap-2.5 rounded-md border-[1.5px] border-[var(--ink-faint)] bg-paper px-4 py-2.5 no-underline shadow-[var(--shadow-card)] transition-colors duration-150 hover:border-ink"
                   >
-                    <span className="block rounded-sm border border-[var(--ink-faint)] bg-paper p-1 shadow-[var(--shadow-card)] transition-colors duration-150 group-hover:border-ink">
-                      {file.type === "image" ? (
-                        <Image
-                          src={url}
-                          alt={t("list.photoAlt", { label })}
-                          width={file.w ?? 600}
-                          height={file.h ?? 800}
-                          sizes="104px"
-                          className="h-36 w-full rounded-[1px] object-cover object-top"
-                        />
-                      ) : (
-                        <span className="flex h-36 w-full select-none items-center justify-center rounded-[1px] bg-paper-shade/70 text-sm font-bold tracking-widest text-ink-soft">
-                          PDF
-                        </span>
-                      )}
+                    <span className="font-medium text-ink transition-colors duration-150 group-hover:text-accent">
+                      {file.label || t("list.fileN", { n: i + 1 })}
                     </span>
-                    <span className="mt-1.5 block text-center text-sm leading-snug text-ink transition-colors duration-150 group-hover:text-accent">
-                      {label}
+                    {file.type === "pdf" ? (
+                      <span className="text-xs font-bold tracking-widest text-ink-soft">PDF</span>
+                    ) : null}
+                    <span
+                      aria-hidden="true"
+                      className="text-ink-soft transition-colors duration-150 group-hover:text-accent"
+                    >
+                      ↗
                     </span>
                   </a>
                 </li>

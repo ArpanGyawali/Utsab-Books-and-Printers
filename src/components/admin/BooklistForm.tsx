@@ -1,15 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Button from "@/components/Button";
 import type { BooklistState } from "@/app/admin/(panel)/booklist/actions";
 
 /**
  * Admin editor for the school/college book lists: the uploaded photos/PDFs
  * with a caption and a remove tick each, plus a multi-file picker for new
- * ones. Everything applies on one Save. Phone-first, same patterns as
- * BookForm.
+ * ones — picking files reveals a caption box per file, so lists are named
+ * before they're saved. Everything applies on one Save. Phone-first, same
+ * patterns as BookForm.
  */
 
 const inputCls =
@@ -31,6 +32,8 @@ export default function BooklistForm({
   files: BooklistFormFile[];
 }) {
   const [state, formAction, pending] = useActionState(action, null);
+  // Names of the files picked in the input — one caption box per file.
+  const [pickedNames, setPickedNames] = useState<string[]>([]);
 
   return (
     <form action={formAction} className="grid gap-4">
@@ -97,13 +100,34 @@ export default function BooklistForm({
           name="files"
           multiple
           accept="image/jpeg,image/png,application/pdf"
+          onChange={(e) =>
+            setPickedNames(Array.from(e.target.files ?? []).map((f) => f.name))
+          }
           className="block w-full text-sm text-ink-soft file:mr-3 file:min-h-11 file:cursor-pointer file:rounded-sm file:border-[1.5px] file:border-solid file:border-ink file:bg-paper file:px-3 file:font-medium file:text-ink"
         />
         <p className="mt-1.5 text-xs text-ink-soft">
           JPG, PNG or PDF. A clear phone photo of each printed list works well —
-          you can pick several at once (a couple of MB at a time), then add
-          captions after saving.
+          you can pick several at once (a couple of MB at a time).
         </p>
+
+        {/* Caption per picked file — visitors see the caption, so name each
+            list before saving */}
+        {pickedNames.length ? (
+          <ul className="mt-3 grid gap-2 border-t border-dashed border-[var(--ink-faint)] pt-3">
+            {pickedNames.map((name, i) => (
+              <li key={`${i}-${name}`}>
+                <label className="block">
+                  <span className="mb-1 block truncate text-xs text-ink-soft">{name}</span>
+                  <input
+                    name={`new_label_${i}`}
+                    placeholder={'Caption visitors will see — e.g. "School — 2083"'}
+                    className={inputCls}
+                  />
+                </label>
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
 
       {state && "error" in state ? (

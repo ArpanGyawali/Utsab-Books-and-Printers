@@ -138,8 +138,7 @@
     "notifyError": "Something went wrong. Ask us on WhatsApp instead — we reply fast.",
     "list": {
       "heading": "Book lists from the school & college — tap to open",
-      "fileN": "List {n}",
-      "photoAlt": "Book list: {label}"
+      "fileN": "List {n}"
     },
     "promptEmpty": "Choose your class above, or search the book's name.",
     "noResults": "Don't see the book? We may still have it, or we can order it for you.",

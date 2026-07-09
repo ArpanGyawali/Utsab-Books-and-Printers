@@ -79,13 +79,18 @@ export async function saveBooklist(
     return { error: "Those files together are too big — add them one or two at a time." };
   }
 
-  for (const file of uploads) {
+  for (const [i, file] of uploads.entries()) {
     const type = FILE_TYPES[file.type];
     if (!type) return { error: `"${file.name}" is not a JPG, PNG or PDF.` };
     if (file.size > FILE_MAX_BYTES) return { error: `"${file.name}" is over 6 MB.` };
 
     const bytes = new Uint8Array(await file.arrayBuffer());
     const dims = type.kind === "image" ? imageSize(bytes, file.type) : null;
+
+    // Caption typed alongside the picker — indexes follow the input's order.
+    const label = String(formData.get(`new_label_${i}`) ?? "")
+      .trim()
+      .slice(0, LABEL_MAX_CHARS);
 
     // Timestamped name → fresh URL, no stale caches (as covers do).
     const path = `booklist-${Date.now()}-${kept.length + 1}.${type.ext}`;
@@ -97,7 +102,7 @@ export async function saveBooklist(
       type: type.kind,
       w: dims?.w ?? null,
       h: dims?.h ?? null,
-      label: "",
+      label,
     });
   }
 
