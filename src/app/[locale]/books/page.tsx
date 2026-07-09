@@ -162,6 +162,9 @@ export default async function BooksPage({
     <Container className="py-12">
       <SectionHeading kicker={t("kicker")}>{t("title")}</SectionHeading>
       <p className="max-w-prose text-ink-soft">{t("intro")}</p>
+      <p className="mt-2 max-w-prose border-l-2 border-accent pl-3 text-sm font-medium text-ink">
+        {t("courierNote")}
+      </p>
 
       {/* The school's official lists — caption cards that open the file itself */}
       {booklist?.files.length ? (
