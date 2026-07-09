@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
 
-const paths = ["", "/services", "/books", "/books/list", "/contact"] as const;
+const paths = ["", "/services", "/books", "/contact"] as const;
 const locales = ["en", "ne"] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {

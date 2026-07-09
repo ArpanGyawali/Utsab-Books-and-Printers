@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import BookCard from "@/components/BookCard";
 import Container from "@/components/Container";
@@ -7,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { className, getBooks, getClasses } from "@/lib/books";
 import { GENRES, isGenre } from "@/lib/genres";
 import { waLink } from "@/lib/inquiry";
+import { booklistFileUrl, getBooklist } from "@/lib/settings";
 import { isStream, STREAM_CLASS_IDS, STREAMS } from "@/lib/streams";
 import type { Book } from "@/lib/supabase/types";
 
@@ -69,6 +71,7 @@ export default async function BooksPage({
   const q = first(sp.q).trim().slice(0, 60);
   const subjectParam = first(sp.subject).trim();
 
+  const booklist = await getBooklist();
   const classes = await getClasses();
   const classParam = first(sp.class);
   // "other" = the non-school shelf (novels, religious, children's books).
@@ -127,24 +130,52 @@ export default async function BooksPage({
       <SectionHeading kicker={t("kicker")}>{t("title")}</SectionHeading>
       <p className="max-w-prose text-ink-soft">{t("intro")}</p>
 
-      {/* The school's official list — a paper slip above the filters */}
-      <Link
-        href="/books/list"
-        className="group mt-5 flex max-w-xl items-center justify-between gap-3 rounded-md border-[1.5px] border-[var(--ink-faint)] bg-paper-shade/50 px-4 py-3 no-underline shadow-[var(--shadow-card)] transition-colors duration-150 hover:border-ink"
-      >
-        <span>
-          <span className="block font-semibold text-ink transition-colors duration-150 group-hover:text-accent">
-            {t("list.button")}
-          </span>
-          <span className="mt-0.5 block text-sm text-ink-soft">{t("list.hint")}</span>
-        </span>
-        <span
-          aria-hidden="true"
-          className="shrink-0 text-xl text-ink-soft transition-colors duration-150 group-hover:text-accent"
-        >
-          →
-        </span>
-      </Link>
+      {/* The school's official lists — sheets pinned right on the page;
+          tap one to open the full photo/PDF */}
+      {booklist?.files.length ? (
+        <section className="mt-6" aria-label={t("list.heading")}>
+          <h3 className="text-sm font-medium uppercase tracking-widest text-accent">
+            {t("list.heading")}
+          </h3>
+          <ul className="mt-3 flex gap-4 overflow-x-auto pb-2">
+            {booklist.files.map((file, i) => {
+              const url = booklistFileUrl(file);
+              if (!url) return null;
+              const label = file.label || t("list.fileN", { n: i + 1 });
+              return (
+                <li key={file.path} className="shrink-0">
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group block w-28 no-underline"
+                  >
+                    <span className="block rounded-sm border border-[var(--ink-faint)] bg-paper p-1 shadow-[var(--shadow-card)] transition-colors duration-150 group-hover:border-ink">
+                      {file.type === "image" ? (
+                        <Image
+                          src={url}
+                          alt={t("list.photoAlt", { label })}
+                          width={file.w ?? 600}
+                          height={file.h ?? 800}
+                          sizes="104px"
+                          className="h-36 w-full rounded-[1px] object-cover object-top"
+                        />
+                      ) : (
+                        <span className="flex h-36 w-full select-none items-center justify-center rounded-[1px] bg-paper-shade/70 text-sm font-bold tracking-widest text-ink-soft">
+                          PDF
+                        </span>
+                      )}
+                    </span>
+                    <span className="mt-1.5 block text-center text-sm leading-snug text-ink transition-colors duration-150 group-hover:text-accent">
+                      {label}
+                    </span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
 
       {/* Class chips — horizontal scroll on mobile */}
       {classes ? (

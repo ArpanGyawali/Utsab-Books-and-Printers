@@ -7,31 +7,31 @@ export default async function AdminBooklistPage() {
   await requireAdmin();
 
   const booklist = await getBooklist();
-  const fileUrl = booklist ? booklistFileUrl(booklist) : null;
+  const files = (booklist?.files ?? []).map((file) => ({
+    path: file.path,
+    type: file.type,
+    label: file.label,
+    url: booklistFileUrl(file),
+  }));
 
   return (
     <>
-      <h1 className="text-2xl font-semibold">School book list</h1>
+      <h1 className="text-2xl font-semibold">School book lists</h1>
       <p className="mt-1 text-sm text-ink-soft">
-        The official list the school/college hands out. Visitors see it from
-        the{" "}
+        Photos or PDFs of the official lists the school/college hands out.
+        They appear as tappable cards on the public{" "}
         <a
-          href="/ne/books/list"
+          href="/ne/books"
           target="_blank"
           rel="noopener noreferrer"
           className="font-medium text-ink underline decoration-ink-soft/40 underline-offset-2"
         >
           Look for Book page
         </a>
-        . Type it, upload a photo or PDF of it, or both.
+        .
       </p>
       <div className="mt-5">
-        <BooklistForm
-          action={saveBooklist}
-          text={booklist?.text ?? ""}
-          fileUrl={fileUrl}
-          fileType={booklist?.file_type ?? null}
-        />
+        <BooklistForm action={saveBooklist} files={files} />
       </div>
     </>
   );

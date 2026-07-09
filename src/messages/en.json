@@ -10,10 +10,6 @@
       "title": "Look for Book — Utsab Books and Printers",
       "description": "Search school books from Nursery to Class 12 and check live availability at our shop in Sainamaina, Rupandehi."
     },
-    "booklist": {
-      "title": "School Book List — Utsab Books and Printers",
-      "description": "The official book list provided by the school and college for the new session — see which books your class needs, then ask us for the full set."
-    },
     "contact": {
       "title": "Contact — Utsab Books and Printers",
       "description": "Find Utsab Books and Printers in Ranibagiya, Sainamaina-1, Rupandehi. Call, WhatsApp or visit us — map, landmarks and opening hours."
@@ -66,7 +62,7 @@
     "ownerCounterAlt": "The owner behind the counter of Utsab Books and Printers",
     "ownerDeskAlt": "The owner at the printing desk of Utsab Books and Printers",
     "videos": {
-      "heading": "Two glimpses from the counter",
+      "heading": "Glimpses from the counter",
       "play": "Play video: {caption}",
       "v1": { "caption": "A namaste from the shop" },
       "v2": { "caption": "Covering copies at the counter" }
@@ -141,18 +137,9 @@
     "notifyRateLimited": "Too many requests from this connection — please try again in a while.",
     "notifyError": "Something went wrong. Ask us on WhatsApp instead — we reply fast.",
     "list": {
-      "button": "Check the school's official book list",
-      "hint": "The class-by-class list provided by the school and college",
-      "kicker": "Straight from the school",
-      "title": "School & college book list",
-      "intro": "The official list provided by the school and college for the new session. Find your class, then ask us for the full set — we'll keep it ready.",
-      "updated": "Updated {date}",
-      "openPdf": "Open the list (PDF)",
-      "photoAlt": "Photo of the book list provided by the school",
-      "empty": "The list for the new session isn't posted yet — ask us on WhatsApp and we'll send it to you.",
-      "back": "Back to Look for Book",
-      "setCta": "Ask for the full set on WhatsApp",
-      "waTemplate": "Hello Utsab Books! I saw the school book list on the website — I'd like to ask about the full set."
+      "heading": "Book lists from the school & college — tap to open",
+      "fileN": "List {n}",
+      "photoAlt": "Book list: {label}"
     },
     "promptEmpty": "Choose your class above, or search the book's name.",
     "noResults": "Don't see the book? We may still have it, or we can order it for you.",

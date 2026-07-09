@@ -52,19 +52,40 @@ export function noticeText(notice: LocalizedNotice, locale: string): string {
   return (locale === "ne" ? notice.text_ne : notice.text_en) || notice.text_en;
 }
 
-/** The school/college's official book list (admin-managed, see 0007_booklist). */
+/**
+ * The school/college's official book lists (admin-managed, see 0007_booklist):
+ * photos/PDFs of the paper lists, shown as tappable cards on Look for Book.
+ */
+export type BooklistFile = {
+  /** Path inside the public `booklists` bucket. */
+  path: string;
+  type: "image" | "pdf";
+  /** Pixel size of an image (for next/image); null for PDFs. */
+  w: number | null;
+  h: number | null;
+  /** Owner's caption, e.g. "School (2083)"; may be empty. */
+  label: string;
+};
+
 export type Booklist = {
-  /** Typed list; shown pre-wrap. Empty string = none. */
-  text: string;
-  /** Path inside the public `booklists` bucket; null = no upload. */
-  file_path: string | null;
-  file_type: "image" | "pdf" | null;
-  /** Pixel size of an uploaded image (for next/image); null for PDFs. */
-  file_w: number | null;
-  file_h: number | null;
+  files: BooklistFile[];
   /** ISO date of the last admin save; shown as a freshness hint. */
   updated_at: string | null;
 };
+
+function parseBooklistFile(v: unknown): BooklistFile | null {
+  if (!v || typeof v !== "object" || Array.isArray(v)) return null;
+  const f = v as Record<string, unknown>;
+  if (typeof f.path !== "string" || !f.path) return null;
+  if (f.type !== "image" && f.type !== "pdf") return null;
+  return {
+    path: f.path,
+    type: f.type,
+    w: typeof f.w === "number" ? f.w : null,
+    h: typeof f.h === "number" ? f.h : null,
+    label: typeof f.label === "string" ? f.label : "",
+  };
+}
 
 const getBooklistCached = unstable_cache(
   async (): Promise<Booklist | null> => {
@@ -76,20 +97,19 @@ const getBooklistCached = unstable_cache(
     if (error) throw new Error(error.message);
     const v = data?.value;
     if (!v || typeof v !== "object" || Array.isArray(v)) return null;
-    const file_path = typeof v.file_path === "string" ? v.file_path : null;
+    const raw = (v as { files?: unknown }).files;
+    const files = Array.isArray(raw)
+      ? raw.map(parseBooklistFile).filter((f): f is BooklistFile => f !== null)
+      : [];
     return {
-      text: typeof v.text === "string" ? v.text : "",
-      file_path,
-      file_type:
-        file_path && (v.file_type === "image" || v.file_type === "pdf")
-          ? v.file_type
+      files,
+      updated_at:
+        typeof (v as { updated_at?: unknown }).updated_at === "string"
+          ? ((v as { updated_at: string }).updated_at)
           : null,
-      file_w: typeof v.file_w === "number" ? v.file_w : null,
-      file_h: typeof v.file_h === "number" ? v.file_h : null,
-      updated_at: typeof v.updated_at === "string" ? v.updated_at : null,
     };
   },
-  ["booklist-v1"],
+  ["booklist-v2"],
   { tags: ["settings"] }
 );
 
@@ -102,11 +122,11 @@ export async function getBooklist(): Promise<Booklist | null> {
   }
 }
 
-/** Public URL of the uploaded booklist photo/PDF; null when nothing uploaded. */
-export function booklistFileUrl(booklist: Booklist): string | null {
+/** Public URL of an uploaded booklist photo/PDF. */
+export function booklistFileUrl(file: BooklistFile): string | null {
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!booklist.file_path || !base) return null;
-  return `${base}/storage/v1/object/public/booklists/${booklist.file_path}`;
+  if (!base) return null;
+  return `${base}/storage/v1/object/public/booklists/${file.path}`;
 }
 
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
