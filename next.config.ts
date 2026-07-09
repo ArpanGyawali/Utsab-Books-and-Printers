@@ -10,12 +10,17 @@ const nextConfig: NextConfig = {
     serverActions: { bodySizeLimit: "8mb" },
   },
   images: {
-    // Admin-uploaded book covers in the public Supabase storage bucket.
+    // Admin uploads in public Supabase storage buckets (covers, booklist photo).
     remotePatterns: [
       {
         protocol: "https",
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/covers/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/booklists/**",
       },
     ],
   },

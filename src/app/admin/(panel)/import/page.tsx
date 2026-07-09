@@ -10,8 +10,9 @@ export default async function AdminImportPage() {
       <p className="mt-1 text-sm text-ink-soft">
         Same spreadsheet template as always: class, subject, title_en, title_ne,
         publisher, price, status, units, expected_arrival, stream (class 11–12
-        only; blank = all streams). You will see exactly what changes before
-        anything is saved.
+        only; blank = all streams), genre (other books only: religious, children,
+        novel or other — leave class and subject blank on those rows). You will
+        see exactly what changes before anything is saved.
       </p>
 
       <ImportPanel />

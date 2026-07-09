@@ -70,10 +70,22 @@ export async function importAction(
     }
     if (!rows.length) return { phase: "error", message: "The CSV has no data rows." };
 
-    const { error } = await supabase
-      .from("books")
-      .upsert(rows, { onConflict: "school_id,class_id,subject,title_en" });
-    if (error) return { phase: "error", message: `Import failed: ${error.message}` };
+    // Two natural keys, two upserts: textbooks conflict on class+subject+title,
+    // other books (blank class + genre, e.g. from a backup export) on genre+title.
+    const textbooks = rows.filter((r) => r.class_id !== null);
+    const otherBooks = rows.filter((r) => r.class_id === null);
+    if (textbooks.length) {
+      const { error } = await supabase
+        .from("books")
+        .upsert(textbooks, { onConflict: "school_id,class_id,subject,title_en" });
+      if (error) return { phase: "error", message: `Import failed: ${error.message}` };
+    }
+    if (otherBooks.length) {
+      const { error } = await supabase
+        .from("books")
+        .upsert(otherBooks, { onConflict: "school_id,genre,title_en" });
+      if (error) return { phase: "error", message: `Import failed: ${error.message}` };
+    }
 
     updateTag("books");
     return { phase: "done", imported: rows.length };

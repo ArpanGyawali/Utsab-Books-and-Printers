@@ -1,16 +1,21 @@
 import Papa from "papaparse";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { isGenre } from "@/lib/genres";
 import { isStream, STREAM_CLASS_IDS } from "@/lib/streams";
-import type { BookStatus, Database, Stream } from "@/lib/supabase/types";
+import type { BookStatus, Database, Genre, Stream } from "@/lib/supabase/types";
 
 /**
  * CSV parsing/diffing for the admin import screen. Same template, class map,
  * and natural key as scripts/import-books.mjs (the Phase-3 CLI importer) —
- * keep the two in sync if the template ever changes.
+ * keep the two in sync if the template ever changes. (The CLI predates the
+ * genre column and stays textbook-only.)
  *
  * Template columns:
- *   class,subject,title_en,title_ne,publisher,price,status,units,expected_arrival,stream
- * (stream: science/management/arts, class 11–12 only; blank = all streams)
+ *   class,subject,title_en,title_ne,publisher,price,status,units,expected_arrival,stream,genre
+ * (stream: science/management/arts, class 11–12 only; blank = all streams.
+ *  genre: religious/children/novel/other for "other books" rows, which leave
+ *  class and subject blank — the shape the export produces, so a backup CSV
+ *  re-imports as-is.)
  */
 
 const STATUSES = new Set<BookStatus>(["in_stock", "out_of_stock", "arriving"]);
@@ -33,7 +38,7 @@ const toAsciiDigits = (s: string) =>
 
 export type CsvBookRow = {
   school_id: string;
-  class_id: number;
+  class_id: number | null;
   subject: string;
   title_en: string;
   title_ne: string | null;
@@ -43,6 +48,7 @@ export type CsvBookRow = {
   units: number;
   expected_arrival: string | null;
   stream: Stream | null;
+  genre: Genre | null;
 };
 
 export function parseBooksCsv(
@@ -59,9 +65,26 @@ export function parseBooksCsv(
   const rows: CsvBookRow[] = [];
   rawRows.forEach((r, i) => {
     const line = i + 2; // 1-based + header row
-    const classId = CLASS_IDS[toAsciiDigits(r.class ?? "").toLowerCase()];
-    if (!classId) return errors.push(`line ${line}: unknown class "${r.class}"`);
-    if (!r.subject) return errors.push(`line ${line}: subject is required`);
+
+    // Blank class + a genre = an "other book" row (novel/religious/…);
+    // otherwise the row is a textbook and must name a class + subject.
+    const rawClass = toAsciiDigits(r.class ?? "").toLowerCase();
+    const rawGenre = (r.genre ?? "").toLowerCase();
+    let classId: number | null = null;
+    let genre: Genre | null = null;
+    if (!rawClass && rawGenre) {
+      if (!isGenre(rawGenre))
+        return errors.push(
+          `line ${line}: genre must be religious, children, novel or other, got "${r.genre}"`
+        );
+      genre = rawGenre;
+    } else {
+      classId = CLASS_IDS[rawClass] ?? null;
+      if (classId === null) return errors.push(`line ${line}: unknown class "${r.class}"`);
+      if (rawGenre)
+        return errors.push(`line ${line}: genre only applies to rows with a blank class`);
+      if (!r.subject) return errors.push(`line ${line}: subject is required`);
+    }
     if (!r.title_en) return errors.push(`line ${line}: title_en is required`);
     if (!STATUSES.has(r.status as BookStatus))
       return errors.push(`line ${line}: bad status "${r.status}"`);
@@ -85,13 +108,13 @@ export function parseBooksCsv(
       return errors.push(
         `line ${line}: stream must be science, management or arts (or blank), got "${r.stream}"`
       );
-    if (rawStream && !STREAM_CLASS_IDS.has(classId))
+    if (rawStream && (classId === null || !STREAM_CLASS_IDS.has(classId)))
       return errors.push(`line ${line}: stream only applies to class 11 and 12`);
 
     rows.push({
       school_id: schoolId,
       class_id: classId,
-      subject: r.subject,
+      subject: classId !== null ? r.subject : "",
       title_en: r.title_en,
       title_ne: r.title_ne || null,
       publisher: r.publisher || null,
@@ -100,6 +123,7 @@ export function parseBooksCsv(
       units,
       expected_arrival: arrival,
       stream: isStream(rawStream) ? rawStream : null,
+      genre,
     });
   });
 
@@ -109,7 +133,7 @@ export function parseBooksCsv(
     const key = naturalKey(row);
     if (seen.has(key))
       errors.push(
-        `duplicate row in CSV: class ${CLASS_KEYS[row.class_id]} / ${row.subject} / ${row.title_en}`
+        `duplicate row in CSV: ${rowLabel(row).class} / ${row.subject || "—"} / ${row.title_en}`
       );
     seen.add(key);
   }
@@ -117,12 +141,26 @@ export function parseBooksCsv(
   return { rows, errors };
 }
 
+/** Textbooks key on class+subject, other books on genre — same as their unique indexes. */
 function naturalKey(r: {
-  class_id: number;
+  class_id: number | null;
+  genre?: Genre | null;
   subject: string;
   title_en: string;
 }): string {
-  return `${r.class_id}|${r.subject}|${r.title_en}`;
+  return r.class_id !== null
+    ? `c${r.class_id}|${r.subject}|${r.title_en}`
+    : `g${r.genre}|${r.title_en}`;
+}
+
+/** Human-readable "class" cell for preview lists ("7", or the genre for other books). */
+function rowLabel(r: { class_id: number | null; genre?: Genre | null }): { class: string } {
+  return {
+    class:
+      r.class_id !== null
+        ? CLASS_KEYS[r.class_id] ?? String(r.class_id)
+        : `other: ${r.genre ?? "?"}`,
+  };
 }
 
 export type ImportPreview = {
@@ -143,6 +181,7 @@ const COMPARED = [
   "units",
   "expected_arrival",
   "stream",
+  "genre",
 ] as const;
 
 export async function previewBooksImport(
@@ -163,7 +202,7 @@ export async function previewBooksImport(
 
   const { data: existing, error } = await supabase
     .from("books")
-    .select("class_id, subject, title_en, title_ne, publisher, price, status, units, expected_arrival, stream")
+    .select("class_id, subject, title_en, title_ne, publisher, price, status, units, expected_arrival, stream, genre")
     .eq("school_id", schoolId);
   if (error) {
     preview.errors.push(`could not read current books: ${error.message}`);
@@ -176,7 +215,7 @@ export async function previewBooksImport(
 
   for (const row of rows) {
     const label = {
-      class: CLASS_KEYS[row.class_id] ?? String(row.class_id),
+      ...rowLabel(row),
       subject: row.subject,
       title_en: row.title_en,
     };
@@ -200,7 +239,7 @@ export async function previewBooksImport(
 /** books table → CSV in the import template's exact column order. */
 export function booksToCsv(
   books: {
-    class_id: number;
+    class_id: number | null;
     subject: string;
     title_en: string;
     title_ne: string | null;
@@ -210,11 +249,12 @@ export function booksToCsv(
     units: number;
     expected_arrival: string | null;
     stream: string | null;
+    genre: string | null;
   }[]
 ): string {
   return Papa.unparse(
     books.map((b) => ({
-      class: CLASS_KEYS[b.class_id] ?? String(b.class_id),
+      class: b.class_id !== null ? CLASS_KEYS[b.class_id] ?? String(b.class_id) : "",
       subject: b.subject,
       title_en: b.title_en,
       title_ne: b.title_ne ?? "",
@@ -224,6 +264,7 @@ export function booksToCsv(
       units: b.units,
       expected_arrival: b.expected_arrival ?? "",
       stream: b.stream ?? "",
+      genre: b.genre ?? "",
     })),
     {
       columns: [
@@ -237,6 +278,7 @@ export function booksToCsv(
         "units",
         "expected_arrival",
         "stream",
+        "genre",
       ],
     }
   );

@@ -11,8 +11,9 @@ export async function GET() {
 
   const { data: books, error } = await supabase
     .from("books")
-    .select("class_id, subject, title_en, title_ne, publisher, price, status, units, expected_arrival, stream")
-    .order("class_id")
+    .select("class_id, subject, title_en, title_ne, publisher, price, status, units, expected_arrival, stream, genre")
+    .order("class_id", { nullsFirst: false })
+    .order("genre")
     .order("subject")
     .order("title_en");
   if (error) {

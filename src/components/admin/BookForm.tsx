@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useActionState, useState } from "react";
 import Button from "@/components/Button";
 import type { FormState } from "@/app/admin/(panel)/books/actions";
+import { GENRE_LABELS, GENRES } from "@/lib/genres";
 import { STREAM_CLASS_IDS, STREAMS } from "@/lib/streams";
 import type { Book, BookStatus, ClassRow, Stream } from "@/lib/supabase/types";
 
@@ -46,10 +47,50 @@ export default function BookForm({
   const [status, setStatus] = useState<BookStatus>(book?.status ?? "in_stock");
   const [units, setUnits] = useState<number>(book?.units ?? 0);
   const [classId, setClassId] = useState<number | null>(book?.class_id ?? null);
+  // Textbook = class + subject; other book (novel/religious/…) = genre only.
+  const [kind, setKind] = useState<"textbook" | "other">(
+    book && book.class_id === null ? "other" : "textbook"
+  );
 
   return (
     <form action={formAction} className="grid gap-4">
       {book ? <input type="hidden" name="id" value={book.id} /> : null}
+      <input type="hidden" name="kind" value={kind} />
+
+      <fieldset>
+        <legend className="mb-1 text-sm font-medium">What is it?</legend>
+        <div className="grid grid-cols-2 gap-0 overflow-hidden rounded-sm border-[1.5px] border-ink">
+          {(
+            [
+              ["textbook", "School textbook"],
+              ["other", "Other book"],
+            ] as const
+          ).map(([value, label]) => (
+            <label key={value} className="block">
+              <input
+                type="radio"
+                name="kind_choice"
+                value={value}
+                checked={kind === value}
+                onChange={() => setKind(value)}
+                className="peer sr-only"
+              />
+              <span
+                className={`flex min-h-11 cursor-pointer items-center justify-center px-1 text-center text-sm font-medium transition-colors duration-150 peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-4 peer-focus-visible:outline-accent ${
+                  kind === value ? "bg-ink text-paper" : "bg-paper text-ink-soft"
+                }`}
+              >
+                {label}
+              </span>
+            </label>
+          ))}
+        </div>
+        {kind === "other" ? (
+          <span className="mt-1 block text-xs text-ink-soft">
+            Novels, religious books, children&apos;s books — anything not tied to a class.
+          </span>
+        ) : null}
+      </fieldset>
 
       {schools.length > 1 ? (
         <label className="block">
@@ -66,39 +107,55 @@ export default function BookForm({
         <input type="hidden" name="school_id" value={schools[0]?.id ?? ""} />
       )}
 
-      <div className="grid grid-cols-2 gap-3">
+      {kind === "other" ? (
         <label className="block">
-          <span className="mb-1 block text-sm font-medium">Class</span>
-          <select
-            name="class_id"
-            defaultValue={book?.class_id ?? ""}
-            onChange={(e) => setClassId(Number.parseInt(e.target.value, 10) || null)}
-            required
-            className={inputCls}
-          >
+          <span className="mb-1 block text-sm font-medium">Kind of book</span>
+          <select name="genre" defaultValue={book?.genre ?? ""} required className={inputCls}>
             <option value="" disabled>
               Pick…
             </option>
-            {classes.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name_en}
+            {GENRES.map((g) => (
+              <option key={g} value={g}>
+                {GENRE_LABELS[g]}
               </option>
             ))}
           </select>
         </label>
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium">Subject</span>
-          <input
-            name="subject"
-            defaultValue={book?.subject}
-            required
-            placeholder="e.g. English"
-            className={inputCls}
-          />
-        </label>
-      </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block">
+            <span className="mb-1 block text-sm font-medium">Class</span>
+            <select
+              name="class_id"
+              defaultValue={book?.class_id ?? ""}
+              onChange={(e) => setClassId(Number.parseInt(e.target.value, 10) || null)}
+              required
+              className={inputCls}
+            >
+              <option value="" disabled>
+                Pick…
+              </option>
+              {classes.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name_en}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-sm font-medium">Subject</span>
+            <input
+              name="subject"
+              defaultValue={book?.subject}
+              required
+              placeholder="e.g. English"
+              className={inputCls}
+            />
+          </label>
+        </div>
+      )}
 
-      {classId !== null && STREAM_CLASS_IDS.has(classId) ? (
+      {kind === "textbook" && classId !== null && STREAM_CLASS_IDS.has(classId) ? (
         <label className="block">
           <span className="mb-1 block text-sm font-medium">Stream</span>
           <select name="stream" defaultValue={book?.stream ?? ""} className={inputCls}>

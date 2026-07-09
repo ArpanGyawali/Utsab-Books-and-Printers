@@ -12,11 +12,49 @@ import PrintQuoteForm from "./PrintQuoteForm";
  * Keyboard accessible — roving tabindex, arrow keys, Home/End.
  */
 
+/**
+ * Each tab's photo keeps its native aspect ratio and is framed like a print
+ * laid on the counter (paper mat + tape), same language as the home-page
+ * figures. Portrait shots get a narrower column so they don't tower over
+ * the item list; landscape shots spread out.
+ */
 const TABS = [
-  { key: "stationery", items: 6, photo: "/images/placeholders/stationery.svg" },
-  { key: "printing", items: 7, photo: "/images/placeholders/printing.svg" },
-  { key: "books", items: 5, photo: "/images/placeholders/books.svg" },
-  { key: "other", items: 4, photo: "/images/placeholders/services-other.svg" },
+  {
+    key: "stationery",
+    items: 7,
+    photo: "/images/services/stationery.jpg",
+    width: 1024,
+    height: 1138,
+    portrait: true,
+    tilt: "-rotate-[1.2deg]",
+  },
+  {
+    key: "printing",
+    items: 11,
+    photo: "/images/services/printing.jpg",
+    width: 1200,
+    height: 820,
+    portrait: false,
+    tilt: "rotate-[0.8deg]",
+  },
+  {
+    key: "books",
+    items: 6,
+    photo: "/images/services/books.jpg",
+    width: 900,
+    height: 1314,
+    portrait: true,
+    tilt: "rotate-[1.2deg]",
+  },
+  {
+    key: "other",
+    items: 7,
+    photo: "/images/services/other.jpg",
+    width: 1163,
+    height: 1007,
+    portrait: false,
+    tilt: "-rotate-[0.8deg]",
+  },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -84,22 +122,39 @@ export default function ServiceTabs() {
         aria-labelledby={`tab-${tab.key}`}
         className="pt-6"
       >
-        <div className="grid gap-6 sm:grid-cols-2">
-          {/* TODO(assets): swap placeholder for the real service photo */}
-          <div className="relative aspect-[8/5] overflow-hidden rounded-md shadow-[var(--shadow-card)]">
-            <Image
-              src={tab.photo}
-              alt={t(`tabs.${tab.key}.photoAlt`)}
-              fill
-              className="object-cover"
-              sizes="(max-width: 640px) 100vw, 50vw"
-            />
-          </div>
+        <div
+          className={`grid items-start gap-x-8 gap-y-6 ${
+            tab.portrait ? "sm:grid-cols-[2fr_3fr]" : "sm:grid-cols-2"
+          }`}
+        >
+          <figure
+            className={`mx-auto w-full pt-2 sm:mx-0 ${tab.tilt} ${
+              tab.portrait ? "max-w-[300px] sm:max-w-[340px]" : "max-w-md sm:max-w-none"
+            }`}
+          >
+            <div className="relative rounded-sm border border-[var(--ink-faint)] bg-paper p-2 pb-3 shadow-[var(--shadow-card)]">
+              {/* Bit of tape holding the print to the page */}
+              <span
+                aria-hidden="true"
+                className="absolute -top-2.5 left-1/2 h-5 w-16 -translate-x-1/2 rotate-[-3deg] rounded-[1px] border border-[var(--ink-faint)] bg-paper-shade/80"
+              />
+              <Image
+                src={tab.photo}
+                alt={t(`tabs.${tab.key}.photoAlt`)}
+                width={tab.width}
+                height={tab.height}
+                className="h-auto w-full rounded-[1px]"
+                sizes={tab.portrait ? "(max-width: 640px) 300px, 340px" : "(max-width: 640px) 100vw, 45vw"}
+              />
+              {/* TODO(assets): taglines are placeholders — collect the owner's
+                  own one-liners (ASSETS.md §3) */}
+              <figcaption className="px-1 pt-2.5 text-center font-heading text-[15px] italic leading-snug text-ink-soft">
+                {t(`tabs.${tab.key}.tagline`)}
+              </figcaption>
+            </div>
+          </figure>
           <div>
-            {/* TODO(assets): taglines are placeholders — collect the owner's
-                own one-liners (ASSETS.md §3) */}
-            <p className="text-lg font-medium">{t(`tabs.${tab.key}.tagline`)}</p>
-            <h3 className="mt-4 mb-2 text-sm font-bold uppercase tracking-widest text-ink-soft">
+            <h3 className="mb-2 text-sm font-bold uppercase tracking-widest text-ink-soft">
               {t("itemsHeading")}
             </h3>
             <ul className="space-y-1.5">

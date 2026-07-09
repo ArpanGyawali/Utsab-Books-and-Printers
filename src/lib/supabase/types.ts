@@ -20,6 +20,9 @@ export type BookStatus = "in_stock" | "out_of_stock" | "arriving";
 /** Class 11/12 stream; null = common to all streams (and classes below 11). */
 export type Stream = "science" | "management" | "arts";
 
+/** Non-school books ("Other books" shelf); null = school textbook. */
+export type Genre = "religious" | "children" | "novel" | "other";
+
 export interface Database {
   public: {
     Tables: {
@@ -72,7 +75,8 @@ export interface Database {
         Row: {
           id: string;
           school_id: string;
-          class_id: number;
+          /** null = non-school book (see genre). */
+          class_id: number | null;
           subject: string;
           title_en: string;
           title_ne: string | null;
@@ -82,6 +86,8 @@ export interface Database {
           units: number;
           expected_arrival: string | null;
           stream: Stream | null;
+          /** Set exactly when class_id is null (books_genre_xor_class). */
+          genre: Genre | null;
           /** Path inside the public `covers` storage bucket; null = placeholder. */
           cover_path: string | null;
           updated_at: string;
@@ -91,7 +97,7 @@ export interface Database {
         Insert: {
           id?: string;
           school_id: string;
-          class_id: number;
+          class_id?: number | null;
           subject: string;
           title_en: string;
           title_ne?: string | null;
@@ -101,13 +107,14 @@ export interface Database {
           units?: number;
           expected_arrival?: string | null;
           stream?: Stream | null;
+          genre?: Genre | null;
           cover_path?: string | null;
           updated_at?: string;
         };
         Update: {
           id?: string;
           school_id?: string;
-          class_id?: number;
+          class_id?: number | null;
           subject?: string;
           title_en?: string;
           title_ne?: string | null;
@@ -117,6 +124,7 @@ export interface Database {
           units?: number;
           expected_arrival?: string | null;
           stream?: Stream | null;
+          genre?: Genre | null;
           cover_path?: string | null;
           updated_at?: string;
         };

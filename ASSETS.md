@@ -29,13 +29,16 @@ we'll color-grade consistently in code/editing.
       story section (`public/images/owner1.jpg` counter, `owner2.jpg` print desk)
 
 ### Services section (one strong photo per service)
-- [ ] Stationery shelves close-up (pens/copies/geometry boxes — colorful section)
-- [ ] Printer/photocopier in action (paper coming out, hands on machine)
-- [ ] Book stacks — school textbook bundles/sets (ideally labelled by class)
-- [ ] "Other services" — lamination, binding, passport photos, whatever applies
+- [x] Stationery shelves close-up — received 2026-07-09, live on /services
+      (`public/images/services/stationery.jpg`)
+- [x] Printer/photocopier — received 2026-07-09 (`services/printing.jpg`)
+- [x] Book stacks / textbook shelves — received 2026-07-09 (`services/books.jpg`)
+- [x] "Other" — sports-items section — received 2026-07-09 (`services/other.jpg`)
 
 ### Nice-to-have (Phase 2–3)
 - [ ] Vertical (portrait) crop of shop front for mobile hero
+- [x] Two short shop videos — received 2026-07-09, live on home story section
+      (`public/videos/shop1.mp4`, `shop2.mp4`; originals in `data/photos-originals/`)
 
 **Specs:** original resolution, no WhatsApp compression — transfer via email/Drive/USB.
 Aim for at least 2000px on the long edge.

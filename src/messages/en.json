@@ -4,11 +4,15 @@
     "description": "School books, stationery, printing and photocopy services in Ranibagiya, Sainamaina-1, Rupandehi. Check book availability online and ask us on WhatsApp.",
     "services": {
       "title": "Services — Utsab Books and Printers",
-      "description": "Stationery, printing, photocopy, lamination, binding, school books and sports items in Ranibagiya, Sainamaina. Send us your print job on WhatsApp."
+      "description": "Stationery, printing, photocopy, lamination, binding, rubber stamps, photo framing, school books, uniforms and sports items in Ranibagiya, Sainamaina. Send us your print job on WhatsApp."
     },
     "books": {
       "title": "Look for Book — Utsab Books and Printers",
       "description": "Search school books from Nursery to Class 12 and check live availability at our shop in Sainamaina, Rupandehi."
+    },
+    "booklist": {
+      "title": "School Book List — Utsab Books and Printers",
+      "description": "The official book list provided by the school and college for the new session — see which books your class needs, then ask us for the full set."
     },
     "contact": {
       "title": "Contact — Utsab Books and Printers",
@@ -61,6 +65,12 @@
     "storySignature": "— The owner, serving you since {year}",
     "ownerCounterAlt": "The owner behind the counter of Utsab Books and Printers",
     "ownerDeskAlt": "The owner at the printing desk of Utsab Books and Printers",
+    "videos": {
+      "heading": "Two glimpses from the counter",
+      "play": "Play video: {caption}",
+      "v1": { "caption": "A namaste from the shop" },
+      "v2": { "caption": "Covering copies at the counter" }
+    },
     "explore": {
       "kicker": "Where to next",
       "heading": "What are you looking for?",
@@ -103,6 +113,15 @@
       "management": "Management",
       "arts": "Arts / Humanities"
     },
+    "otherBooks": "Other books",
+    "genreLabel": "Kind of book",
+    "allGenres": "All",
+    "genres": {
+      "religious": "Religious (dharmik)",
+      "children": "Children's books",
+      "novel": "Novels & stories",
+      "other": "Other"
+    },
     "resultsCount": "{count, plural, =0 {No books found} one {1 book} other {# books}}",
     "priceAsk": "Ask",
     "priceRs": "Rs. {price}",
@@ -121,6 +140,20 @@
     "notifyInvalid": "That doesn't look like a Nepali mobile number — please check it.",
     "notifyRateLimited": "Too many requests from this connection — please try again in a while.",
     "notifyError": "Something went wrong. Ask us on WhatsApp instead — we reply fast.",
+    "list": {
+      "button": "Check the school's official book list",
+      "hint": "The class-by-class list provided by the school and college",
+      "kicker": "Straight from the school",
+      "title": "School & college book list",
+      "intro": "The official list provided by the school and college for the new session. Find your class, then ask us for the full set — we'll keep it ready.",
+      "updated": "Updated {date}",
+      "openPdf": "Open the list (PDF)",
+      "photoAlt": "Photo of the book list provided by the school",
+      "empty": "The list for the new session isn't posted yet — ask us on WhatsApp and we'll send it to you.",
+      "back": "Back to Look for Book",
+      "setCta": "Ask for the full set on WhatsApp",
+      "waTemplate": "Hello Utsab Books! I saw the school book list on the website — I'd like to ask about the full set."
+    },
     "promptEmpty": "Choose your class above, or search the book's name.",
     "noResults": "Don't see the book? We may still have it, or we can order it for you.",
     "noResultsCta": "Ask us on WhatsApp",
@@ -144,7 +177,8 @@
           "i3": "Geometry boxes and instruments",
           "i4": "Art and craft supplies",
           "i5": "Exam boards, files and folders",
-          "i6": "Book covers, stickers, keyrings, bottles and many more"
+          "i6": "Book covers, stickers, keyrings, bottles and many more",
+          "i7": "Science lab practical materials, the full set"
         }
       },
       "printing": {
@@ -156,9 +190,13 @@
           "i2": "Print quotes can be sent from the form below, or visit the store with your file on WhatsApp, email or pen drive",
           "i3": "Lamination (cards to A4)",
           "i4": "Spiral and book binding",
-          "i5": "Passport-size photos",
+          "i5": "Passport-size photos, ready on the spot",
           "i6": "Scan to PDF",
-          "i7": "Making your documents ready to print"
+          "i7": "Computer typing — we make your documents ready to print",
+          "i8": "Rubber stamps (self-ink) made right away",
+          "i9": "Custom-design printing on t-shirts, mugs, caps, fibre bags and token-of-love gifts",
+          "i10": "Colour prints of your favourite design, finished in an attractive photo frame",
+          "i11": "Offset press jobs and flex printing"
         }
       },
       "books": {
@@ -170,7 +208,8 @@
           "i2": "Guides and guess papers",
           "i3": "Practice and grammar books",
           "i4": "Dictionaries",
-          "i5": "Novels, art books and children's story books"
+          "i5": "Novels, religious (dharmik) books, art books and children's story books",
+          "i6": "Books on demand — motivational, moral education, social novels, religious, history and biographies by popular authors, delivered within Nepal and abroad"
         },
         "cta": "Check availability in Look for Book"
       },
@@ -182,7 +221,10 @@
           "i1": "Sports items — balls, bats, shuttlecocks",
           "i2": "Gift items and wrapping",
           "i3": "Calculators, including scientific",
-          "i4": "Office supplies"
+          "i4": "Office supplies",
+          "i5": "Help with filling online forms — Lok Sewa, teacher service, army, police, passport and more",
+          "i6": "Ready-made school and college uniforms — ties, belts, trousers, sweaters — at fair prices",
+          "i7": "Badminton racket stringing, strength guaranteed"
         }
       }
     },

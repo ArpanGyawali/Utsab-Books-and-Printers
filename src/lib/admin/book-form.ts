@@ -1,5 +1,6 @@
+import { isGenre } from "@/lib/genres";
 import { isStream, STREAM_CLASS_IDS } from "@/lib/streams";
-import type { BookStatus, Stream } from "@/lib/supabase/types";
+import type { BookStatus, Genre, Stream } from "@/lib/supabase/types";
 
 /**
  * Parsing + validation for the admin book form (create and edit share it).
@@ -18,7 +19,7 @@ const str = (fd: FormData, name: string) => String(fd.get(name) ?? "").trim();
 
 export type BookColumns = {
   school_id: string;
-  class_id: number;
+  class_id: number | null;
   subject: string;
   title_en: string;
   title_ne: string | null;
@@ -28,6 +29,7 @@ export type BookColumns = {
   units: number;
   expected_arrival: string | null;
   stream: Stream | null;
+  genre: Genre | null;
 };
 
 export function parseBookForm(
@@ -36,11 +38,23 @@ export function parseBookForm(
   const school_id = str(fd, "school_id");
   if (!UUID_RE.test(school_id)) return { ok: false, error: "Pick a school." };
 
-  const class_id = Number.parseInt(toAsciiDigits(str(fd, "class_id")), 10);
-  if (!Number.isInteger(class_id)) return { ok: false, error: "Pick a class." };
+  // Two shapes (books_genre_xor_class): school textbook = class + subject;
+  // other book (novel/religious/children's) = genre only, subject stored ''.
+  const isOther = str(fd, "kind") === "other";
 
-  const subject = str(fd, "subject");
-  if (!subject) return { ok: false, error: "Subject is required." };
+  let class_id: number | null = null;
+  let subject = "";
+  let genre: Genre | null = null;
+  if (isOther) {
+    const rawGenre = str(fd, "genre");
+    if (!isGenre(rawGenre)) return { ok: false, error: "Pick what kind of book it is." };
+    genre = rawGenre;
+  } else {
+    class_id = Number.parseInt(toAsciiDigits(str(fd, "class_id")), 10);
+    if (!Number.isInteger(class_id)) return { ok: false, error: "Pick a class." };
+    subject = str(fd, "subject");
+    if (!subject) return { ok: false, error: "Subject is required." };
+  }
 
   const title_en = str(fd, "title_en");
   if (!title_en) return { ok: false, error: "English title is required." };
@@ -69,7 +83,9 @@ export function parseBookForm(
   const rawStream = str(fd, "stream");
   if (rawStream && !isStream(rawStream)) return { ok: false, error: "Pick a valid stream." };
   const stream =
-    STREAM_CLASS_IDS.has(class_id) && rawStream && isStream(rawStream) ? rawStream : null;
+    class_id !== null && STREAM_CLASS_IDS.has(class_id) && rawStream && isStream(rawStream)
+      ? rawStream
+      : null;
 
   return {
     ok: true,
@@ -85,6 +101,7 @@ export function parseBookForm(
       units,
       expected_arrival: status === "arriving" && arrival ? arrival : null,
       stream,
+      genre,
     },
   };
 }

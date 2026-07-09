@@ -83,7 +83,7 @@ export async function saveBook(
     if (error) {
       return {
         error: error.code === "23505"
-          ? "This book already exists for that school, class and subject."
+          ? "This book already exists (same class or kind, and title)."
           : `Could not save: ${error.message}`,
       };
     }

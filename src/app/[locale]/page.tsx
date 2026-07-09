@@ -6,6 +6,7 @@ import Button from "@/components/Button";
 import Container from "@/components/Container";
 import RuledDivider from "@/components/RuledDivider";
 import SectionHeading from "@/components/SectionHeading";
+import ShopVideos from "@/components/ShopVideos";
 import StampLogo from "@/components/StampLogo";
 import LocalBusinessJsonLd from "@/components/LocalBusinessJsonLd";
 import { Link } from "@/i18n/navigation";
@@ -141,6 +142,15 @@ function HomeContent({ hours }: { hours: WeekHours }) {
               </div>
             </figure>
           </div>
+        </div>
+
+        {/* Two short clips shot behind the same counter — video keeps the
+            "real shop, real people" promise the photos make. */}
+        <div className="mt-14">
+          <h3 className="text-center text-sm font-medium uppercase tracking-widest text-accent">
+            {tHome("videos.heading")}
+          </h3>
+          <ShopVideos />
         </div>
       </Container>
 

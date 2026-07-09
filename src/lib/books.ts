@@ -42,8 +42,11 @@ function sanitizeQuery(q: string): string {
   return q.replace(/[%_,.()"'\\*]/g, " ").replace(/\s+/g, " ").trim().slice(0, 60);
 }
 
+/** Class filter: a seeded class id, "other" (non-school books), or null = all. */
+export type ClassSelection = number | "other" | null;
+
 const getBooksCached = unstable_cache(
-  async (classId: number | null, rawQuery: string | null): Promise<Book[]> => {
+  async (classSel: ClassSelection, rawQuery: string | null): Promise<Book[]> => {
     const sb = supabaseServer();
 
     // Single launch school; the schema is multi-school-ready but the public
@@ -56,15 +59,19 @@ const getBooksCached = unstable_cache(
     if (schoolError) throw new Error(schoolError.message);
     if (!schools?.length) return [];
 
+    // Textbooks first (nulls last on class_id), the "other" shelf grouped
+    // by genre at the end.
     let query = sb
       .from("books")
       .select("*")
       .eq("school_id", schools[0].id)
-      .order("class_id")
+      .order("class_id", { nullsFirst: false })
+      .order("genre")
       .order("subject")
       .order("title_en");
 
-    if (classId !== null) query = query.eq("class_id", classId);
+    if (classSel === "other") query = query.is("class_id", null);
+    else if (classSel !== null) query = query.eq("class_id", classSel);
     const q = rawQuery ? sanitizeQuery(rawQuery) : "";
     if (q) query = query.ilike("search", `%${q}%`);
 
@@ -77,11 +84,11 @@ const getBooksCached = unstable_cache(
 );
 
 export async function getBooks(
-  classId: number | null,
+  classSel: ClassSelection,
   rawQuery: string | null
 ): Promise<Book[] | null> {
   try {
-    return await getBooksCached(classId, rawQuery);
+    return await getBooksCached(classSel, rawQuery);
   } catch (err) {
     console.warn("[books] query failed:", (err as Error).message);
     return null;

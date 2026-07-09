@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { requireAdmin } from "@/lib/admin/auth";
 import { coverUrl } from "@/lib/books";
+import { GENRE_LABELS } from "@/lib/genres";
 import AdminBadge from "@/components/admin/AdminBadge";
 import type { BookStatus } from "@/lib/supabase/types";
 
@@ -133,7 +134,7 @@ export default async function AdminBooksPage({
                     <span className="block truncate font-medium">{book.title_en}</span>
                     <span className="block truncate text-sm text-ink-soft">
                       {[
-                        book.classes?.name_en,
+                        book.classes?.name_en ?? (book.genre ? GENRE_LABELS[book.genre] : null),
                         book.subject,
                         book.price !== null ? `Rs. ${Number(book.price)}` : "Ask",
                       ]
