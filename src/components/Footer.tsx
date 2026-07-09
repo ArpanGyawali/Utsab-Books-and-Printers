@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import Container from "./Container";
 import InkAccent from "./InkAccent";
@@ -15,15 +14,7 @@ export default function Footer({ hours }: { hours: WeekHours }) {
       <Container className="grid gap-10 py-10 sm:grid-cols-3">
         <div>
           <h2 className="mb-2 text-base font-semibold">{t("addressHeading")}</h2>
-          {/* The shop seal as a letterhead mark; the name below names it */}
-          <Image
-            src="/images/logo.png"
-            alt=""
-            width={64}
-            height={64}
-            sizes="64px"
-            className="mb-3 h-16 w-16 select-none"
-          />
+          <InkAccent variant="book" className="mb-3 h-5 w-7 text-accent" />
           <p className="text-sm leading-relaxed text-ink-soft">
             {localizedName(locale)}
             <br />

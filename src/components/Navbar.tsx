@@ -28,10 +28,10 @@ export default function Navbar({ hours }: { hours: WeekHours }) {
           <Image
             src="/images/logo.png"
             alt=""
-            width={40}
-            height={40}
-            sizes="40px"
-            className="h-10 w-10 shrink-0 select-none"
+            width={56}
+            height={56}
+            sizes="56px"
+            className="h-12 w-12 shrink-0 select-none sm:h-14 sm:w-14"
           />
           <StampLogo size="sm" />
         </Link>
