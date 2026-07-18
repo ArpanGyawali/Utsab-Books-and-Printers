@@ -7,6 +7,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import IntroLoader from "@/components/IntroLoader";
 import LanguageGate from "@/components/LanguageGate";
 import { site } from "@/lib/site";
 import { getShopHours } from "@/lib/settings";
@@ -69,6 +70,24 @@ export default async function LocaleLayout({
       className={`${mukta.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        {/* Pre-paint gate script (styles/motion.css). Two jobs:
+            1. `js` class — hidden reveal start-states only apply under
+               html.js, so content is never invisible for no-JS visitors.
+            2. `intro` class — shows the intro splash once per tab session,
+               and only for returning visitors (no cookie = LanguageGate is
+               about to cover the screen instead). Marked consumed either
+               way so it never pops mid-session after choosing a language.
+            Inline + first in body = runs before paint, zero flash. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "document.documentElement.classList.add('js');" +
+              "try{if(!sessionStorage.introShown&&!matchMedia('(prefers-reduced-motion: reduce)').matches){" +
+              "if(document.cookie.indexOf('utsab-lang-chosen=')!==-1)document.documentElement.classList.add('intro');" +
+              "sessionStorage.introShown='1'}}catch(e){}",
+          }}
+        />
+        <IntroLoader />
         <NextIntlClientProvider>
           <LanguageGate />
           <Navbar hours={hours} />

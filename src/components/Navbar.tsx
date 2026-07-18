@@ -4,34 +4,30 @@ import { Link } from "@/i18n/navigation";
 import Container from "./Container";
 import StampLogo from "./StampLogo";
 import LanguageToggle from "./LanguageToggle";
+import NavLinks from "./NavLinks";
 import OpenNowDot from "./OpenNowDot";
 import type { WeekHours } from "@/lib/site";
-
-const links = [
-  { href: "/services", key: "services" },
-  { href: "/books", key: "books" },
-  { href: "/contact", key: "contact" },
-] as const;
 
 export default function Navbar({ hours }: { hours: WeekHours }) {
   const t = useTranslations("nav");
 
   return (
-    <header className="border-b border-[var(--ink-faint)] bg-paper/95">
+    <header className="nav-in border-b border-[var(--ink-faint)] bg-paper/95">
       <Container className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3">
         <Link
           href="/"
-          className="mr-auto flex items-center gap-2.5 no-underline"
+          className="group mr-auto flex items-center gap-2.5 no-underline"
           aria-label={t("home")}
         >
-          {/* The shop's round seal; decorative next to the wordmark stamp */}
+          {/* The shop's round seal; decorative next to the wordmark stamp.
+              Gentle tilt + grow when the lockup is hovered. */}
           <Image
             src="/images/logo.png"
             alt=""
             width={56}
             height={56}
             sizes="56px"
-            className="h-12 w-12 shrink-0 select-none sm:h-14 sm:w-14"
+            className="h-12 w-12 shrink-0 select-none transition-[rotate,scale] duration-[var(--dur-micro)] ease-soft motion-safe:group-hover:-rotate-2 motion-safe:group-hover:scale-105 sm:h-14 sm:w-14"
           />
           <StampLogo size="sm" />
         </Link>
@@ -43,15 +39,7 @@ export default function Navbar({ hours }: { hours: WeekHours }) {
           aria-label={t("home")}
           className="-mx-4 order-last flex w-[calc(100%+2rem)] gap-1 overflow-x-auto px-4 sm:mx-0 sm:w-auto sm:px-0"
         >
-          {links.map(({ href, key }) => (
-            <Link
-              key={key}
-              href={href}
-              className="whitespace-nowrap rounded-sm px-3 py-2 font-medium text-ink-soft no-underline transition-colors duration-150 hover:bg-paper-shade hover:text-ink"
-            >
-              {t(key)}
-            </Link>
-          ))}
+          <NavLinks />
         </nav>
       </Container>
     </header>

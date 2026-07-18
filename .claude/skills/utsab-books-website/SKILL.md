@@ -111,9 +111,38 @@ stamp-style logo treatment.
   when touching font config.
 - Real photos only (from ASSETS.md shoot list). Consistent warm grade. `next/image`
   with proper `sizes`. No stock photos, ever.
-- Motion: sparing. CSS transitions ≤200ms; one or two moments of delight max
-  (e.g. stamp "thunk" on status badge, paper-fold on service tabs). No scroll-jacking,
-  no floating particles, no typing animations.
+- Motion: sparing. No scroll-jacking, no floating particles, no typing animations,
+  no animation libraries. The system lives in `src/styles/motion.css` — ALL timing
+  tokens and motion CSS go there, nowhere else:
+  - Tokens: `--dur-micro` (280ms hovers/presses), `--dur-reveal` (1150ms scroll
+    reveals), `--ease-out-soft`, `--ease-stamp` (overshoot for stamp/pop
+    entrances), `--reveal-stagger`, `--reveal-shift` (directional slide),
+    `--word-stagger`. Micro ≤320ms, reveals ≤1200ms. Motion is deliberately
+    slow and unhurried so each move is easy to read — tweak timings by editing
+    these tokens only.
+  - Animate **transform/opacity only** (plus color fades). Shadow ceiling still
+    applies: hover lift uses `--shadow-lift` (darker, not bigger).
+  - Every animation/hover-transform sits inside
+    `@media (prefers-reduced-motion: no-preference)`; JSX transform motion uses
+    `motion-safe:`; hover effects gate behind `@media (hover: hover)`.
+  - Reveals via `<Reveal>` / `useReveal` (`components/motion/`): hidden states
+    exist only under `html.js` (inline gate script in the locale layout) with a
+    CSS failsafe that force-shows content after `--reveal-failsafe` — content
+    must never be able to stay invisible. `<Reveal from="left|right">` slides in
+    from the side (reuses the same gate/failsafe). Split headings via
+    `<SplitWords>`: split on SPACES only (Devanagari-safe), never
+    characters/graphemes.
+  - Reusable primitives in `motion.css` (add here, don't reinvent): `.hero-cascade`
+    (load-time child stagger), `.stamp-in`/`.pop-in` (stamped/scaled entrances),
+    `.draw-in` (ink underline pens itself when its Reveal enters), `.panel-in` /
+    `.panel-in-stagger` (content-swap entrance, e.g. tab panels — key-remount to
+    replay), `.photo-in` (framed print lays onto the page; composes with a
+    Tailwind `rotate-*` tilt), `.ruled-draw` (view-timeline divider), `.star-twinkle`,
+    `.dot-pulse` (open-now ping), `.shake-x` (inline error), `.nav-in` (navbar
+    drop-in). Hero photo slowly settles then breathes (`hero-settle`/`hero-breathe`).
+  - Intro splash (`IntroLoader`) is once per tab session, returning visitors
+    only, ≤1.6s, `pointer-events: none`, fully CSS-driven. Async waits use
+    `LogoSpinner` (e.g. `books/loading.tsx`).
 - Services page: **notebook index-tab layout** — four tabs styled like dividers
   (Stationery / Printing / Books / Other). Tab switch reveals a photo + owner's
   one-liner + item list. Keyboard accessible (roving tabindex, arrow keys).

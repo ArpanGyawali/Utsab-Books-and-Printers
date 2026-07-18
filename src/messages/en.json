@@ -295,6 +295,9 @@
     "closed": "Closed",
     "copyright": "© {year} Utsab Books and Printers, Ranibagiya, Sainamaina-1, Rupandehi"
   },
+  "common": {
+    "loading": "Loading…"
+  },
   "notFound": {
     "kicker": "404",
     "title": "This page could not be found",

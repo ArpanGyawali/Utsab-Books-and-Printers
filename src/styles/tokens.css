@@ -35,6 +35,9 @@
 
   /* Shadow ceiling per design rules: never heavier than 0 1px 3px */
   --shadow-card: 0 1px 3px rgb(30 36 48 / 0.14);
+  /* Hover-lift state: same blur as the ceiling, nudged down and darker so
+     a lifted element reads as raised without a heavier shadow */
+  --shadow-lift: 0 2px 3px rgb(30 36 48 / 0.2);
 }
 
 @theme inline {

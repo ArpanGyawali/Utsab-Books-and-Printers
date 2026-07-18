@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
+import useReveal from "@/components/motion/useReveal";
 import { site, type WeekHours } from "@/lib/site";
 
 const dayKeys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
@@ -24,10 +25,12 @@ export default function HoursTable({ hours }: { hours: WeekHours }) {
   const t = useTranslations("footer");
   const tContact = useTranslations("contact");
   const today = useSyncExternalStore(subscribeNever, todayInKathmandu, () => -1);
+  // Rows fade in one-by-one on first view (see styles/motion.css)
+  const revealRef = useReveal<HTMLTableSectionElement>(true);
 
   return (
     <table className="w-full max-w-sm text-sm">
-      <tbody>
+      <tbody ref={revealRef} className="reveal-stagger">
         {hours.map((h, day) => {
           const isToday = day === today;
           return (

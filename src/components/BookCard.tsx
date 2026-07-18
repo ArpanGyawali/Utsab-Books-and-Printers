@@ -101,13 +101,13 @@ export default function BookCard({
             title={title}
             bookClass={classLabel}
             source="book_card"
-            className="inline-flex min-h-11 items-center rounded-sm border border-accent-deep bg-accent px-4 py-1.5 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-deep"
+            className="lift inline-flex min-h-11 items-center rounded-sm border border-accent-deep bg-accent px-4 py-1.5 text-sm font-medium text-paper hover:bg-accent-deep"
           >
             {t("inquire")}
           </InquireLink>
           <a
             href={viberLink()}
-            className="inline-flex min-h-11 items-center rounded-sm border-[1.5px] border-ink px-4 py-1.5 text-sm font-medium text-ink transition-colors duration-150 hover:bg-paper-shade"
+            className="lift inline-flex min-h-11 items-center rounded-sm border-[1.5px] border-ink px-4 py-1.5 text-sm font-medium text-ink hover:bg-paper-shade"
           >
             {t("viber")}
           </a>

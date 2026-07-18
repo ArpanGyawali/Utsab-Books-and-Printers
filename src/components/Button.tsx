@@ -4,8 +4,8 @@ import type { ComponentProps } from "react";
 type Variant = "primary" | "secondary";
 
 const base =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-sm px-5 py-2.5 " +
-  "font-medium leading-snug transition-colors duration-150 " +
+  "lift inline-flex min-h-11 items-center justify-center gap-2 rounded-sm px-5 py-2.5 " +
+  "font-medium leading-snug " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
 const variants: Record<Variant, string> = {

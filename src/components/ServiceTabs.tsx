@@ -103,10 +103,10 @@ export default function ServiceTabs() {
               aria-controls={`panel-${key}`}
               tabIndex={selected ? 0 : -1}
               onClick={() => setActive(key)}
-              className={`-mb-0.5 min-h-11 shrink-0 rounded-t-md border-2 border-b-0 px-4 pt-2 pb-1.5 font-medium transition-colors duration-150 ${
+              className={`-mb-0.5 min-h-11 shrink-0 rounded-t-md border-2 border-b-0 px-4 pt-2 pb-1.5 font-medium transition-[color,background-color,translate] duration-[var(--dur-micro)] ease-soft ${
                 selected
                   ? "border-[var(--ink-faint)] bg-paper text-accent"
-                  : "border-transparent bg-paper-shade text-ink-soft hover:text-ink"
+                  : "border-transparent bg-paper-shade text-ink-soft hover:text-ink motion-safe:hover:-translate-y-0.5"
               }`}
             >
               {t(`tabs.${key}.label`)}
@@ -123,12 +123,13 @@ export default function ServiceTabs() {
         className="pt-6"
       >
         <div
-          className={`grid items-start gap-x-8 gap-y-6 ${
+          key={tab.key}
+          className={`panel-in-stagger grid items-start gap-x-8 gap-y-6 ${
             tab.portrait ? "sm:grid-cols-[2fr_3fr]" : "sm:grid-cols-2"
           }`}
         >
           <figure
-            className={`mx-auto w-full pt-2 sm:mx-0 ${tab.tilt} ${
+            className={`photo-in mx-auto w-full pt-2 sm:mx-0 ${tab.tilt} ${
               tab.portrait ? "max-w-[300px] sm:max-w-[340px]" : "max-w-md sm:max-w-none"
             }`}
           >

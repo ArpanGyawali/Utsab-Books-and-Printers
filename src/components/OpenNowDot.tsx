@@ -36,7 +36,7 @@ export default function OpenNowDot({
       <span
         aria-hidden="true"
         className={`inline-block h-2 w-2 rounded-full ${
-          open ? "bg-instock" : "bg-outofstock"
+          open ? "dot-pulse bg-instock" : "bg-outofstock"
         }`}
       />
       {open ? t("openNow") : t("closedNow")}

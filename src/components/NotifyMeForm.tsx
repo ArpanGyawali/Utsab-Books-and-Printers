@@ -20,7 +20,7 @@ export default function NotifyMeForm({ bookId }: { bookId: string }) {
 
   if (status === "done") {
     return (
-      <p role="status" className="mt-3 text-sm font-medium text-instock">
+      <p role="status" className="pop-in mt-3 text-sm font-medium text-instock">
         {t("notifyDone")}
       </p>
     );
@@ -31,7 +31,7 @@ export default function NotifyMeForm({ bookId }: { bookId: string }) {
       <button
         type="button"
         onClick={() => setStatus("open")}
-        className="mt-3 inline-flex min-h-11 items-center rounded-sm border-[1.5px] border-dashed border-ink-soft px-4 py-2 text-sm font-medium text-ink transition-colors duration-150 hover:bg-paper-shade"
+        className="lift mt-3 inline-flex min-h-11 items-center rounded-sm border-[1.5px] border-dashed border-ink-soft px-4 py-2 text-sm font-medium text-ink hover:bg-paper-shade"
       >
         {t("notifyButton")}
       </button>
@@ -68,7 +68,7 @@ export default function NotifyMeForm({ bookId }: { bookId: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="mt-3">
+    <form onSubmit={onSubmit} noValidate className="panel-in mt-3">
       <label className="block max-w-xs">
         <span className="mb-1 block text-sm font-medium">{t("notifyPhoneLabel")}</span>
         <div className="flex gap-2">
@@ -84,14 +84,14 @@ export default function NotifyMeForm({ bookId }: { bookId: string }) {
           <button
             type="submit"
             disabled={status === "sending"}
-            className="inline-flex min-h-11 shrink-0 items-center rounded-sm border border-accent-deep bg-accent px-4 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-deep disabled:opacity-60"
+            className="lift inline-flex min-h-11 shrink-0 items-center rounded-sm border border-accent-deep bg-accent px-4 text-sm font-medium text-paper hover:bg-accent-deep disabled:opacity-60"
           >
             {t(status === "sending" ? "notifySending" : "notifySubmit")}
           </button>
         </div>
       </label>
       {error ? (
-        <p role="alert" className="mt-1.5 text-sm font-medium text-outofstock">
+        <p key={error} role="alert" className="shake-x mt-1.5 text-sm font-medium text-outofstock">
           {error}
         </p>
       ) : null}

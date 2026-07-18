@@ -6,7 +6,7 @@ export default function RuledDivider({ className = "" }: { className?: string })
   return (
     <div
       aria-hidden="true"
-      className={`ruled h-[82px] w-full ${className}`}
+      className={`ruled ruled-draw h-[82px] w-full ${className}`}
     />
   );
 }

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import Container from "./Container";
 import InkAccent from "./InkAccent";
+import Reveal from "./motion/Reveal";
 import { site, localizedAddress, localizedName, type WeekHours } from "@/lib/site";
 
 const dayKeys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
@@ -12,7 +13,8 @@ export default function Footer({ hours }: { hours: WeekHours }) {
 
   return (
     <footer className="mt-16 border-t border-[var(--ink-faint)] bg-paper-shade">
-      <Container className="grid gap-10 py-10 sm:grid-cols-3">
+      <Container className="py-10">
+        <Reveal as="div" stagger className="grid gap-10 sm:grid-cols-3">
         <div>
           <h2 className="mb-2 text-base font-semibold">{t("addressHeading")}</h2>
           {/* The shop seal as a letterhead mark; the name below names it */}
@@ -67,6 +69,7 @@ export default function Footer({ hours }: { hours: WeekHours }) {
             </a>
           </p>
         </div>
+        </Reveal>
       </Container>
 
       <div className="border-t border-[var(--ink-faint)] py-4">

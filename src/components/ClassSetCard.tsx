@@ -38,7 +38,7 @@ export default function ClassSetCard({
           href={waLink(t("waTemplate", { class: label }))}
           title={label}
           source="class_set"
-          className="inline-flex min-h-11 items-center rounded-sm border border-accent-deep bg-accent px-4 py-1.5 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-deep"
+          className="lift inline-flex min-h-11 items-center rounded-sm border border-accent-deep bg-accent px-4 py-1.5 text-sm font-medium text-paper hover:bg-accent-deep"
         >
           {t("cta")}
         </InquireLink>

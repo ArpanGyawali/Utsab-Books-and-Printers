@@ -17,7 +17,7 @@ export default function SectionHeading({
         </p>
       ) : null}
       <h2 className="text-2xl font-semibold sm:text-3xl">{children}</h2>
-      <InkAccent variant="underline" className="mt-2 h-2.5 w-28 text-accent" />
+      <InkAccent variant="underline" className="draw-in mt-2 h-2.5 w-28 text-accent" />
     </div>
   );
 }

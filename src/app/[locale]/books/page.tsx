@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Form from "next/form";
 import { after } from "next/server";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import BookCard from "@/components/BookCard";
@@ -6,6 +7,7 @@ import ClassSetCard from "@/components/ClassSetCard";
 import Container from "@/components/Container";
 import InquireLink from "@/components/InquireLink";
 import SectionHeading from "@/components/SectionHeading";
+import Reveal from "@/components/motion/Reveal";
 import { Link } from "@/i18n/navigation";
 import { logEvent } from "@/lib/analytics";
 import { className, getBooks, getClasses } from "@/lib/books";
@@ -38,7 +40,8 @@ const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v
 
 const chipBase =
   "inline-flex min-h-9 items-center whitespace-nowrap rounded-sm border-[1.5px] px-3 py-1 " +
-  "text-sm font-medium transition-colors duration-150";
+  "text-sm font-medium transition-[scale,color,background-color,border-color] " +
+  "duration-[var(--dur-micro)] motion-safe:active:scale-95";
 const chipOn = `${chipBase} border-ink bg-ink text-paper`;
 const chipOff = `${chipBase} border-[var(--ink-faint)] bg-paper text-ink hover:bg-paper-shade`;
 
@@ -160,11 +163,13 @@ export default async function BooksPage({
 
   return (
     <Container className="py-12">
-      <SectionHeading kicker={t("kicker")}>{t("title")}</SectionHeading>
-      <p className="max-w-prose text-ink-soft">{t("intro")}</p>
-      <p className="mt-2 max-w-prose border-l-2 border-accent pl-3 text-sm font-medium text-ink">
-        {t("courierNote")}
-      </p>
+      <Reveal>
+        <SectionHeading kicker={t("kicker")}>{t("title")}</SectionHeading>
+        <p className="max-w-prose text-ink-soft">{t("intro")}</p>
+        <p className="mt-2 max-w-prose border-l-2 border-accent pl-3 text-sm font-medium text-ink">
+          {t("courierNote")}
+        </p>
+      </Reveal>
 
       {/* The school's official lists — caption cards that open the file itself */}
       {booklist?.files.length ? (
@@ -182,7 +187,7 @@ export default async function BooksPage({
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex min-h-11 items-center gap-2.5 rounded-md border-[1.5px] border-[var(--ink-faint)] bg-paper px-4 py-2.5 no-underline shadow-[var(--shadow-card)] transition-colors duration-150 hover:border-ink"
+                    className="lift group flex min-h-11 items-center gap-2.5 rounded-md border-[1.5px] border-[var(--ink-faint)] bg-paper px-4 py-2.5 no-underline shadow-[var(--shadow-card)] hover:border-ink"
                   >
                     <span className="font-medium text-ink transition-colors duration-150 group-hover:text-accent">
                       {file.label || t("list.fileN", { n: i + 1 })}
@@ -192,7 +197,7 @@ export default async function BooksPage({
                     ) : null}
                     <span
                       aria-hidden="true"
-                      className="text-ink-soft transition-colors duration-150 group-hover:text-accent"
+                      className="text-ink-soft transition-[translate,color] duration-[var(--dur-micro)] ease-soft group-hover:text-accent motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5"
                     >
                       ↗
                     </span>
@@ -243,8 +248,9 @@ export default async function BooksPage({
         </nav>
       ) : null}
 
-      {/* Search — plain GET form, works without JS */}
-      <form action={`/${locale}/books`} method="get" className="mt-4 flex max-w-xl gap-2">
+      {/* Search — next/form: client-side nav with the loading.tsx spinner
+          while results fetch; degrades to a plain GET form without JS */}
+      <Form action={`/${locale}/books`} className="mt-4 flex max-w-xl gap-2">
         {selectedClass || otherSelected ? (
           <input type="hidden" name="class" value={otherSelected ? "other" : selectedClass!.id} />
         ) : null}
@@ -264,11 +270,11 @@ export default async function BooksPage({
         />
         <button
           type="submit"
-          className="inline-flex min-h-11 shrink-0 items-center rounded-sm border border-accent-deep bg-accent px-5 font-medium text-paper shadow-[var(--shadow-card)] transition-colors duration-150 hover:bg-accent-deep"
+          className="lift inline-flex min-h-11 shrink-0 items-center rounded-sm border border-accent-deep bg-accent px-5 font-medium text-paper shadow-[var(--shadow-card)] hover:bg-accent-deep"
         >
           {t("searchSubmit")}
         </button>
-      </form>
+      </Form>
 
       {/* Active-search token — the input's native ✕ only clears the box, not the
           URL, so give the real filter a visible one-click way out */}
@@ -388,15 +394,19 @@ export default async function BooksPage({
         <AskInstead heading={t("noResults")} cta={t("noResultsCta")} message={t("noResultsWaTemplate", { query: fallbackQuery })} query={fallbackQuery} />
       ) : (
         <section className="mt-8">
-          {setBooks.length > 1 ? <ClassSetCard label={setLabel} books={setBooks} /> : null}
+          {setBooks.length > 1 ? (
+            <Reveal>
+              <ClassSetCard label={setLabel} books={setBooks} />
+            </Reveal>
+          ) : null}
           <p role="status" className="text-sm font-medium text-ink-soft">
             {t("resultsCount", { count: results.length })}
           </p>
-          <ul className="mt-3 grid gap-3 lg:grid-cols-2">
+          <Reveal as="ul" stagger className="reveal-brisk mt-3 grid gap-3 lg:grid-cols-2">
             {results.map((book: Book) => (
               <BookCard key={book.id} book={book} classLabel={bookLabel(book)} />
             ))}
-          </ul>
+          </Reveal>
           {/* Never a dead end — generic escape hatch under every result list */}
           <p className="mt-8 text-sm text-ink-soft">
             {t("noResults")}{" "}
@@ -427,16 +437,16 @@ function AskInstead({
   query: string;
 }) {
   return (
-    <div className="mt-10 rounded-md border-[1.5px] border-dashed border-[var(--ink-faint)] p-6 text-center">
+    <Reveal className="mt-10 rounded-md border-[1.5px] border-dashed border-[var(--ink-faint)] p-6 text-center">
       <p className="text-ink-soft">{heading}</p>
       <InquireLink
         href={waLink(message)}
         title={query}
         source="no_results"
-        className="mt-4 inline-flex min-h-11 items-center rounded-sm border border-accent-deep bg-accent px-5 py-2 font-medium text-paper shadow-[var(--shadow-card)] transition-colors duration-150 hover:bg-accent-deep"
+        className="lift mt-4 inline-flex min-h-11 items-center rounded-sm border border-accent-deep bg-accent px-5 py-2 font-medium text-paper shadow-[var(--shadow-card)] hover:bg-accent-deep"
       >
         {cta}
       </InquireLink>
-    </div>
+    </Reveal>
   );
 }
