@@ -8,6 +8,10 @@ import Container from "@/components/Container";
 import InquireLink from "@/components/InquireLink";
 import SectionHeading from "@/components/SectionHeading";
 import Reveal from "@/components/motion/Reveal";
+import {
+  BooksPendingProvider,
+  ResultsPendingOverlay,
+} from "@/components/BooksResultsPending";
 import { Link } from "@/i18n/navigation";
 import { logEvent } from "@/lib/analytics";
 import { className, getBooks, getClasses } from "@/lib/books";
@@ -36,7 +40,8 @@ export async function generateMetadata({
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
-const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
+const first = (v: string | string[] | undefined) =>
+  (Array.isArray(v) ? v[0] : v) ?? "";
 
 const chipBase =
   "inline-flex min-h-9 items-center whitespace-nowrap rounded-sm border-[1.5px] px-3 py-1 " +
@@ -72,6 +77,7 @@ export default async function BooksPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "books" });
+  const tCommon = await getTranslations({ locale, namespace: "common" });
 
   const sp = await searchParams;
   const q = first(sp.q).trim().slice(0, 60);
@@ -84,7 +90,9 @@ export default async function BooksPage({
   const otherSelected = classParam === "other";
   const classIdParam = Number.parseInt(classParam, 10);
   const selectedClass = classes?.find((c) => c.id === classIdParam) ?? null;
-  const classSel = otherSelected ? ("other" as const) : (selectedClass?.id ?? null);
+  const classSel = otherSelected
+    ? ("other" as const)
+    : (selectedClass?.id ?? null);
 
   const hasFilter = Boolean(selectedClass || otherSelected || q);
   const books = classes && hasFilter ? await getBooks(classSel, q || null) : [];
@@ -92,7 +100,9 @@ export default async function BooksPage({
 
   // Stream filter — class 11/12 only. Default "all streams"; an individual
   // stream also includes books common to every stream (stream = null).
-  const hasStreams = Boolean(selectedClass && STREAM_CLASS_IDS.has(selectedClass.id));
+  const hasStreams = Boolean(
+    selectedClass && STREAM_CLASS_IDS.has(selectedClass.id),
+  );
   const streamParam = first(sp.stream).trim();
   const selectedStream = hasStreams && isStream(streamParam) ? streamParam : "";
 
@@ -105,14 +115,16 @@ export default async function BooksPage({
 
   const subjects =
     selectedClass && books?.length
-      ? [...new Set(books.map((b) => b.subject))].sort((a, b) => a.localeCompare(b))
+      ? [...new Set(books.map((b) => b.subject))].sort((a, b) =>
+          a.localeCompare(b),
+        )
       : [];
   const selectedSubject = subjects.includes(subjectParam) ? subjectParam : "";
   const results = (books ?? []).filter(
     (b) =>
       (!selectedSubject || b.subject === selectedSubject) &&
       (!selectedStream || b.stream === null || b.stream === selectedStream) &&
-      (!selectedGenre || b.genre === selectedGenre)
+      (!selectedGenre || b.genre === selectedGenre),
   );
 
   // "Complete set" = every book of the class (subject chips don't narrow it);
@@ -120,20 +132,26 @@ export default async function BooksPage({
   const setBooks =
     selectedClass && !q && (!hasStreams || selectedStream)
       ? (books ?? []).filter(
-          (b) => !selectedStream || b.stream === null || b.stream === selectedStream
+          (b) =>
+            !selectedStream || b.stream === null || b.stream === selectedStream,
         )
       : [];
   const setLabel = selectedClass
-    ? [className(selectedClass, locale), selectedStream ? t(`streams.${selectedStream}`) : ""]
+    ? [
+        className(selectedClass, locale),
+        selectedStream ? t(`streams.${selectedStream}`) : "",
+      ]
         .filter(Boolean)
         .join(" · ")
     : "";
 
-  const classLabelById = new Map(classes?.map((c) => [c.id, className(c, locale)]));
+  const classLabelById = new Map(
+    classes?.map((c) => [c.id, className(c, locale)]),
+  );
   /** Card badge + WhatsApp text: class for textbooks, genre for the rest. */
   const bookLabel = (book: Book) =>
     book.class_id !== null
-      ? classLabelById.get(book.class_id) ?? ""
+      ? (classLabelById.get(book.class_id) ?? "")
       : t(`genres.${book.genre ?? "other"}`);
   // What people search is the monthly report's core data — log the query
   // (not chip-only navigations) after the response is sent.
@@ -143,11 +161,15 @@ export default async function BooksPage({
         "search",
         {
           q,
-          class: otherSelected ? "other" : selectedClass ? className(selectedClass, "en") : null,
+          class: otherSelected
+            ? "other"
+            : selectedClass
+              ? className(selectedClass, "en")
+              : null,
           results: results.length,
         },
-        locale
-      )
+        locale,
+      ),
     );
   }
 
@@ -155,273 +177,357 @@ export default async function BooksPage({
     q ||
     [
       selectedClass ? className(selectedClass, locale) : "",
-      selectedGenre ? t(`genres.${selectedGenre}`) : otherSelected ? t("otherBooks") : "",
+      selectedGenre
+        ? t(`genres.${selectedGenre}`)
+        : otherSelected
+          ? t("otherBooks")
+          : "",
       selectedSubject,
     ]
       .filter(Boolean)
       .join(" · ");
 
+  // Identifies the current result set; a change means a filter navigation
+  // committed, which clears the in-place pending overlay (BooksPendingProvider).
+  const resultsKey = JSON.stringify([
+    classSel,
+    q,
+    selectedSubject,
+    selectedStream,
+    selectedGenre,
+  ]);
+
   return (
-    <Container className="py-12">
-      <Reveal>
-        <SectionHeading kicker={t("kicker")}>{t("title")}</SectionHeading>
-        <p className="max-w-prose text-ink-soft">{t("intro")}</p>
-        <p className="mt-2 max-w-prose border-l-2 border-accent pl-3 text-sm font-medium text-ink">
-          {t("courierNote")}
-        </p>
-      </Reveal>
-
-      {/* The school's official lists — caption cards that open the file itself */}
-      {booklist?.files.length ? (
-        <section className="mt-6" aria-label={t("list.heading")}>
-          <h3 className="text-sm font-medium uppercase tracking-widest text-accent">
-            {t("list.heading")}
-          </h3>
-          <ul className="mt-3 flex max-w-xl flex-wrap gap-3">
-            {booklist.files.map((file, i) => {
-              const url = booklistFileUrl(file);
-              if (!url) return null;
-              return (
-                <li key={file.path}>
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="lift group flex min-h-11 items-center gap-2.5 rounded-md border-[1.5px] border-[var(--ink-faint)] bg-paper px-4 py-2.5 no-underline shadow-[var(--shadow-card)] hover:border-ink"
-                  >
-                    <span className="font-medium text-ink transition-colors duration-150 group-hover:text-accent">
-                      {file.label || t("list.fileN", { n: i + 1 })}
-                    </span>
-                    {file.type === "pdf" ? (
-                      <span className="text-xs font-bold tracking-widest text-ink-soft">PDF</span>
-                    ) : null}
-                    <span
-                      aria-hidden="true"
-                      className="text-ink-soft transition-[translate,color] duration-[var(--dur-micro)] ease-soft group-hover:text-accent motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5"
-                    >
-                      ↗
-                    </span>
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      ) : null}
-
-      {/* Class chips — horizontal scroll on mobile */}
-      {classes ? (
-        <nav aria-label={t("classLabel")} className="mt-6">
-          <p className="mb-2 text-sm font-medium uppercase tracking-widest text-accent">
-            {t("classLabel")}
+    <BooksPendingProvider resultsKey={resultsKey}>
+      <Container className="py-12">
+        <Reveal>
+          <SectionHeading kicker={t("kicker")}>{t("title")}</SectionHeading>
+          <p className="max-w-prose text-ink-soft">{t("intro")}</p>
+          <p className="mt-2 max-w-prose border-l-2 border-accent pl-3 text-sm font-medium text-ink">
+            {t("courierNote")}
           </p>
-          <ul className="flex items-stretch gap-2 overflow-x-auto pb-2">
-            <li>
-              <Link
-                href={filters({ q })}
-                className={selectedClass || otherSelected ? chipOff : chipOn}
-              >
-                {t("allClasses")}
-              </Link>
-            </li>
-            {classes.map((c) => (
-              <li key={c.id}>
+        </Reveal>
+
+        {/* The school's official lists — caption cards that open the file itself */}
+        {booklist?.files.length ? (
+          <section className="mt-6" aria-label={t("list.heading")}>
+            <h3 className="text-sm font-medium uppercase tracking-widest text-accent">
+              {t("list.heading")}
+            </h3>
+            <ul className="mt-3 flex max-w-xl flex-wrap gap-3">
+              {booklist.files.map((file, i) => {
+                const url = booklistFileUrl(file);
+                if (!url) return null;
+                return (
+                  <li key={file.path}>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="lift group flex min-h-11 items-center gap-2.5 rounded-md border-[1.5px] border-[var(--ink-faint)] bg-paper px-4 py-2.5 no-underline shadow-[var(--shadow-card)] hover:border-ink"
+                    >
+                      <span className="font-medium text-ink transition-colors duration-150 group-hover:text-accent">
+                        {file.label || t("list.fileN", { n: i + 1 })}
+                      </span>
+                      {file.type === "pdf" ? (
+                        <span className="text-xs font-bold tracking-widest text-ink-soft">
+                          PDF
+                        </span>
+                      ) : null}
+                      <span
+                        aria-hidden="true"
+                        className="text-ink-soft transition-[translate,color] duration-[var(--dur-micro)] ease-soft group-hover:text-accent motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5"
+                      >
+                        ↗
+                      </span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ) : null}
+
+        {/* Class chips — horizontal scroll on mobile */}
+        {classes ? (
+          <nav aria-label={t("classLabel")} className="mt-6">
+            <p className="mb-2 text-sm font-medium uppercase tracking-widest text-accent">
+              {t("classLabel")}
+            </p>
+            <ul className="flex items-stretch gap-2 overflow-x-auto pb-2">
+              <li>
                 <Link
-                  href={filters({ class: c.id, q })}
-                  className={selectedClass?.id === c.id ? chipOn : chipOff}
+                  scroll={false}
+                  href={filters({ q })}
+                  className={selectedClass || otherSelected ? chipOff : chipOn}
                 >
-                  {className(c, locale)}
+                  {t("allClasses")}
                 </Link>
               </li>
-            ))}
-            {/* The non-school shelf sits after a rule — same row, its own drawer */}
-            <li aria-hidden="true" className="w-px shrink-0 self-stretch bg-[var(--ink-faint)]" />
-            <li>
-              <Link
-                href={filters({ class: "other", q })}
-                className={otherSelected ? chipOn : chipOff}
-              >
-                {t("otherBooks")}
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      ) : null}
-
-      {/* Search — next/form: client-side nav with the loading.tsx spinner
-          while results fetch; degrades to a plain GET form without JS */}
-      <Form action={`/${locale}/books`} className="mt-4 flex max-w-xl gap-2">
-        {selectedClass || otherSelected ? (
-          <input type="hidden" name="class" value={otherSelected ? "other" : selectedClass!.id} />
-        ) : null}
-        {selectedStream ? <input type="hidden" name="stream" value={selectedStream} /> : null}
-        {selectedGenre ? <input type="hidden" name="genre" value={selectedGenre} /> : null}
-        <label htmlFor="book-search" className="sr-only">
-          {t("searchLabel")}
-        </label>
-        <input
-          id="book-search"
-          name="q"
-          type="search"
-          key={q} // remount on navigation so the box always shows the active search
-          defaultValue={q}
-          placeholder={t("searchPlaceholder")}
-          className="w-full rounded-sm border-[1.5px] border-[var(--ink-faint)] bg-paper px-3 py-2.5 text-ink placeholder:text-ink-soft/60 focus-visible:border-ink"
-        />
-        <button
-          type="submit"
-          className="lift inline-flex min-h-11 shrink-0 items-center rounded-sm border border-accent-deep bg-accent px-5 font-medium text-paper shadow-[var(--shadow-card)] hover:bg-accent-deep"
-        >
-          {t("searchSubmit")}
-        </button>
-      </Form>
-
-      {/* Active-search token — the input's native ✕ only clears the box, not the
-          URL, so give the real filter a visible one-click way out */}
-      {q ? (
-        <p className="mt-2 text-sm text-ink-soft">
-          {t("activeSearch", { query: q })}{" "}
-          <Link
-            href={filters({
-              class: otherSelected ? "other" : selectedClass?.id,
-              subject: selectedSubject,
-              stream: selectedStream,
-              genre: selectedGenre,
-            })}
-            className="font-medium text-ink underline decoration-ink-soft/40 underline-offset-2"
-          >
-            {t("clearSearch")}
-          </Link>
-        </p>
-      ) : null}
-
-      {/* Stream chips — only for class 11/12; "all streams" is the default */}
-      {hasStreams ? (
-        <nav aria-label={t("streamLabel")} className="mt-4">
-          <p className="mb-2 text-sm font-medium uppercase tracking-widest text-accent">
-            {t("streamLabel")}
-          </p>
-          <ul className="flex gap-2 overflow-x-auto pb-2">
-            <li>
-              <Link
-                href={filters({ class: selectedClass?.id, subject: selectedSubject, q })}
-                className={selectedStream ? chipOff : chipOn}
-              >
-                {t("allStreams")}
-              </Link>
-            </li>
-            {STREAMS.map((s) => (
-              <li key={s}>
+              {classes.map((c) => (
+                <li key={c.id}>
+                  <Link
+                    scroll={false}
+                    href={filters({ class: c.id, q })}
+                    className={selectedClass?.id === c.id ? chipOn : chipOff}
+                  >
+                    {className(c, locale)}
+                  </Link>
+                </li>
+              ))}
+              {/* The non-school shelf sits after a rule — same row, its own drawer */}
+              <li
+                aria-hidden="true"
+                className="w-px shrink-0 self-stretch bg-[var(--ink-faint)]"
+              />
+              <li>
                 <Link
+                  scroll={false}
+                  href={filters({ class: "other", q })}
+                  className={otherSelected ? chipOn : chipOff}
+                >
+                  {t("otherBooks")}
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        ) : null}
+
+        {/* Search — next/form: client-side nav (scroll={false} so results update
+          in place without jumping to the top); degrades to a plain GET form
+          without JS. No route loading.tsx, so the current results stay visible
+          during the transition instead of collapsing to a full-page spinner. */}
+        <Form
+          action={`/${locale}/books`}
+          scroll={false}
+          className="mt-4 flex max-w-xl gap-2"
+        >
+          {selectedClass || otherSelected ? (
+            <input
+              type="hidden"
+              name="class"
+              value={otherSelected ? "other" : selectedClass!.id}
+            />
+          ) : null}
+          {selectedStream ? (
+            <input type="hidden" name="stream" value={selectedStream} />
+          ) : null}
+          {selectedGenre ? (
+            <input type="hidden" name="genre" value={selectedGenre} />
+          ) : null}
+          <label htmlFor="book-search" className="sr-only">
+            {t("searchLabel")}
+          </label>
+          <input
+            id="book-search"
+            name="q"
+            type="search"
+            key={q} // remount on navigation so the box always shows the active search
+            defaultValue={q}
+            placeholder={t("searchPlaceholder")}
+            className="w-full rounded-sm border-[1.5px] border-[var(--ink-faint)] bg-paper px-3 py-2.5 text-ink placeholder:text-ink-soft/60 focus-visible:border-ink"
+          />
+          <button
+            type="submit"
+            className="lift inline-flex min-h-11 shrink-0 items-center rounded-sm border border-accent-deep bg-accent px-5 font-medium text-paper shadow-[var(--shadow-card)] hover:bg-accent-deep"
+          >
+            {t("searchSubmit")}
+          </button>
+        </Form>
+
+        {/* Active-search token — the input's native ✕ only clears the box, not the
+          URL, so give the real filter a visible one-click way out */}
+        {q ? (
+          <p className="mt-2 text-sm text-ink-soft">
+            {t("activeSearch", { query: q })}{" "}
+            <Link
+              scroll={false}
+              href={filters({
+                class: otherSelected ? "other" : selectedClass?.id,
+                subject: selectedSubject,
+                stream: selectedStream,
+                genre: selectedGenre,
+              })}
+              className="font-medium text-ink underline decoration-ink-soft/40 underline-offset-2"
+            >
+              {t("clearSearch")}
+            </Link>
+          </p>
+        ) : null}
+
+        {/* Stream chips — only for class 11/12; "all streams" is the default */}
+        {hasStreams ? (
+          <nav aria-label={t("streamLabel")} className="mt-4">
+            <p className="mb-2 text-sm font-medium uppercase tracking-widest text-accent">
+              {t("streamLabel")}
+            </p>
+            <ul className="flex gap-2 overflow-x-auto pb-2">
+              <li>
+                <Link
+                  scroll={false}
                   href={filters({
                     class: selectedClass?.id,
                     subject: selectedSubject,
                     q,
-                    stream: s,
                   })}
-                  className={selectedStream === s ? chipOn : chipOff}
+                  className={selectedStream ? chipOff : chipOn}
                 >
-                  {t(`streams.${s}`)}
+                  {t("allStreams")}
                 </Link>
               </li>
-            ))}
-          </ul>
-        </nav>
-      ) : null}
+              {STREAMS.map((s) => (
+                <li key={s}>
+                  <Link
+                    scroll={false}
+                    href={filters({
+                      class: selectedClass?.id,
+                      subject: selectedSubject,
+                      q,
+                      stream: s,
+                    })}
+                    className={selectedStream === s ? chipOn : chipOff}
+                  >
+                    {t(`streams.${s}`)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
 
-      {/* Genre chips — the "other" shelf only; just the genres in stock */}
-      {genres.length > 1 ? (
-        <nav aria-label={t("genreLabel")} className="mt-4">
-          <p className="mb-2 text-sm font-medium uppercase tracking-widest text-accent">
-            {t("genreLabel")}
-          </p>
-          <ul className="flex gap-2 overflow-x-auto pb-2">
-            <li>
-              <Link
-                href={filters({ class: "other", q })}
-                className={selectedGenre ? chipOff : chipOn}
-              >
-                {t("allGenres")}
-              </Link>
-            </li>
-            {genres.map((g) => (
-              <li key={g}>
+        {/* Genre chips — the "other" shelf only; just the genres in stock */}
+        {genres.length > 1 ? (
+          <nav aria-label={t("genreLabel")} className="mt-4">
+            <p className="mb-2 text-sm font-medium uppercase tracking-widest text-accent">
+              {t("genreLabel")}
+            </p>
+            <ul className="flex gap-2 overflow-x-auto pb-2">
+              <li>
                 <Link
-                  href={filters({ class: "other", q, genre: g })}
-                  className={selectedGenre === g ? chipOn : chipOff}
+                  scroll={false}
+                  href={filters({ class: "other", q })}
+                  className={selectedGenre ? chipOff : chipOn}
                 >
-                  {t(`genres.${g}`)}
+                  {t("allGenres")}
                 </Link>
               </li>
-            ))}
-          </ul>
-        </nav>
-      ) : null}
+              {genres.map((g) => (
+                <li key={g}>
+                  <Link
+                    scroll={false}
+                    href={filters({ class: "other", q, genre: g })}
+                    className={selectedGenre === g ? chipOn : chipOff}
+                  >
+                    {t(`genres.${g}`)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
 
-      {/* Subject chips for the selected class */}
-      {subjects.length > 1 ? (
-        <nav aria-label={t("subjectLabel")} className="mt-4">
-          <ul className="flex gap-2 overflow-x-auto pb-2">
-            <li>
-              <Link
-                href={filters({ class: selectedClass?.id, q, stream: selectedStream })}
-                className={selectedSubject ? chipOff : chipOn}
-              >
-                {t("allSubjects")}
-              </Link>
-            </li>
-            {subjects.map((s) => (
-              <li key={s}>
+        {/* Subject chips for the selected class */}
+        {subjects.length > 1 ? (
+          <nav aria-label={t("subjectLabel")} className="mt-4">
+            <ul className="flex gap-2 overflow-x-auto pb-2">
+              <li>
                 <Link
-                  href={filters({ class: selectedClass?.id, subject: s, q, stream: selectedStream })}
-                  className={selectedSubject === s ? chipOn : chipOff}
+                  scroll={false}
+                  href={filters({
+                    class: selectedClass?.id,
+                    q,
+                    stream: selectedStream,
+                  })}
+                  className={selectedSubject ? chipOff : chipOn}
                 >
-                  {s}
+                  {t("allSubjects")}
                 </Link>
               </li>
-            ))}
-          </ul>
-        </nav>
-      ) : null}
+              {subjects.map((s) => (
+                <li key={s}>
+                  <Link
+                    scroll={false}
+                    href={filters({
+                      class: selectedClass?.id,
+                      subject: s,
+                      q,
+                      stream: selectedStream,
+                    })}
+                    className={selectedSubject === s ? chipOn : chipOff}
+                  >
+                    {s}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
 
-      {offline ? (
-        <AskInstead heading={t("offline")} cta={t("noResultsCta")} message={t("noResultsWaTemplate", { query: fallbackQuery || "…" })} query={fallbackQuery} />
-      ) : !hasFilter ? (
-        <p className="mt-10 rounded-md border-[1.5px] border-dashed border-[var(--ink-faint)] p-6 text-center text-ink-soft">
-          {t("promptEmpty")}
-        </p>
-      ) : results.length === 0 ? (
-        <AskInstead heading={t("noResults")} cta={t("noResultsCta")} message={t("noResultsWaTemplate", { query: fallbackQuery })} query={fallbackQuery} />
-      ) : (
-        <section className="mt-8">
-          {setBooks.length > 1 ? (
-            <Reveal>
-              <ClassSetCard label={setLabel} books={setBooks} />
-            </Reveal>
-          ) : null}
-          <p role="status" className="text-sm font-medium text-ink-soft">
-            {t("resultsCount", { count: results.length })}
-          </p>
-          <Reveal as="ul" stagger className="reveal-brisk mt-3 grid gap-3 lg:grid-cols-2">
-            {results.map((book: Book) => (
-              <BookCard key={book.id} book={book} classLabel={bookLabel(book)} />
-            ))}
-          </Reveal>
-          {/* Never a dead end — generic escape hatch under every result list */}
-          <p className="mt-8 text-sm text-ink-soft">
-            {t("noResults")}{" "}
-            <InquireLink
-              href={waLink(t("noResultsWaTemplate", { query: fallbackQuery }))}
-              title={fallbackQuery}
-              source="results_footer"
-              className="font-medium text-ink underline decoration-ink-soft/40 underline-offset-2"
-            >
-              {t("noResultsCta")}
-            </InquireLink>
-          </p>
-        </section>
-      )}
-    </Container>
+        {/* Results region — `relative` so the pending overlay can sit over it */}
+        <div className="relative">
+          <ResultsPendingOverlay label={tCommon("loading")} />
+          {offline ? (
+            <AskInstead
+              heading={t("offline")}
+              cta={t("noResultsCta")}
+              message={t("noResultsWaTemplate", {
+                query: fallbackQuery || "…",
+              })}
+              query={fallbackQuery}
+            />
+          ) : !hasFilter ? (
+            <p className="mt-10 rounded-md border-[1.5px] border-dashed border-[var(--ink-faint)] p-6 text-center text-ink-soft">
+              {t("promptEmpty")}
+            </p>
+          ) : results.length === 0 ? (
+            <AskInstead
+              heading={t("noResults")}
+              cta={t("noResultsCta")}
+              message={t("noResultsWaTemplate", { query: fallbackQuery })}
+              query={fallbackQuery}
+            />
+          ) : (
+            <section className="mt-8">
+              {setBooks.length > 1 ? (
+                <Reveal>
+                  <ClassSetCard label={setLabel} books={setBooks} />
+                </Reveal>
+              ) : null}
+              <p role="status" className="text-sm font-medium text-ink-soft">
+                {t("resultsCount", { count: results.length })}
+              </p>
+              <Reveal
+                as="ul"
+                stagger
+                className="reveal-brisk mt-3 grid gap-3 lg:grid-cols-2"
+              >
+                {results.map((book: Book) => (
+                  <BookCard
+                    key={book.id}
+                    book={book}
+                    classLabel={bookLabel(book)}
+                  />
+                ))}
+              </Reveal>
+              {/* Never a dead end — generic escape hatch under every result list */}
+              <p className="mt-8 text-sm text-ink-soft">
+                {t("noResults")}{" "}
+                <InquireLink
+                  href={waLink(
+                    t("noResultsWaTemplate", { query: fallbackQuery }),
+                  )}
+                  title={fallbackQuery}
+                  source="results_footer"
+                  className="font-medium text-ink underline decoration-ink-soft/40 underline-offset-2"
+                >
+                  {t("noResultsCta")}
+                </InquireLink>
+              </p>
+            </section>
+          )}
+        </div>
+      </Container>
+    </BooksPendingProvider>
   );
 }
 

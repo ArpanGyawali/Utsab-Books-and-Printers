@@ -141,8 +141,12 @@ stamp-style logo treatment.
     `.dot-pulse` (open-now ping), `.shake-x` (inline error), `.nav-in` (navbar
     drop-in). Hero photo slowly settles then breathes (`hero-settle`/`hero-breathe`).
   - Intro splash (`IntroLoader`) is once per tab session, returning visitors
-    only, ≤1.6s, `pointer-events: none`, fully CSS-driven. Async waits use
-    `LogoSpinner` (e.g. `books/loading.tsx`).
+    only, ≤1.6s, `pointer-events: none`, fully CSS-driven. `LogoSpinner` is the
+    async-wait spinner primitive (reduced-motion aware) for any pending state.
+  - Look-for-Book filtering: filter `<Link>`s and the search `<Form>` set
+    `scroll={false}`, and the page has **no** route `loading.tsx`, so results
+    update in place — the prior results stay visible through the transition and
+    the page never jumps to the top. Keep it that way when adding filters.
 - Services page: **notebook index-tab layout** — four tabs styled like dividers
   (Stationery / Printing / Books / Other). Tab switch reveals a photo + owner's
   one-liner + item list. Keyboard accessible (roving tabindex, arrow keys).
