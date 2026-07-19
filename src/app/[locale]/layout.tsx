@@ -68,6 +68,9 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       className={`${mukta.variable} ${fraunces.variable} h-full antialiased`}
+      // The gate script below adds `js`/`intro` to <html> before hydration,
+      // so the client className intentionally differs from the server HTML.
+      suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
         {/* Pre-paint gate script (styles/motion.css). Two jobs:
