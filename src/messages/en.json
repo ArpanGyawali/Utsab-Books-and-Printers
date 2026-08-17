@@ -6,6 +6,10 @@
       "title": "Services — Utsab Books and Printers",
       "description": "Stationery, printing, photocopy, lamination, binding, rubber stamps, photo framing, school books, uniforms and sports items in Ranibagiya, Sainamaina. Send us your print job on WhatsApp."
     },
+    "stationery": {
+      "title": "Stationery — Utsab Books and Printers",
+      "description": "Browse the stationery we stock — pens, copies, geometry boxes, art supplies, files and school gear — at our shop in Sainamaina, Rupandehi."
+    },
     "books": {
       "title": "Look for Book — Utsab Books and Printers",
       "description": "Search school books from Nursery to Class 12 and check live availability at our shop in Sainamaina, Rupandehi."
@@ -24,6 +28,7 @@
   "nav": {
     "home": "Home",
     "services": "Services",
+    "stationery": "Stationery",
     "books": "Look for Book",
     "contact": "Contact",
     "openNow": "Open now",
@@ -117,12 +122,6 @@
     "otherBooks": "Other books",
     "genreLabel": "Kind of book",
     "allGenres": "All",
-    "genres": {
-      "religious": "Religious (dharmik)",
-      "children": "Children's books",
-      "novel": "Novels & stories",
-      "other": "Other"
-    },
     "resultsCount": "{count, plural, =0 {No books found} one {1 book} other {# books}}",
     "priceAsk": "Ask",
     "priceRs": "Rs. {price}",
@@ -174,6 +173,21 @@
     "noResultsWaTemplate": "Hello Utsab Books! I'm looking for: {query}",
     "offline": "Live stock can't be checked right now — but the shelf is just a message away."
   },
+  "stationery": {
+    "kicker": "On our shelves",
+    "title": "Our Stationery",
+    "intro": "A look at the stationery we keep in stock. Tap a category to browse — and if you don't see something, just ask.",
+    "categoryLabel": "Category",
+    "allCategories": "All",
+    "priceRs": "Rs. {price}",
+    "imageAlt": "{name}",
+    "resultsCount": "{count, plural, =0 {No items} one {1 item} other {# items}}",
+    "empty": "Nothing here yet in this category — but we may still have it in the shop.",
+    "offline": "Our shelf can't be loaded right now — but it's just a message away.",
+    "askMore": "Looking for something you don't see here?",
+    "askCta": "Ask us on WhatsApp",
+    "waTemplate": "Hello Utsab Books! Do you have this in stock: {query}"
+  },
   "services": {
     "title": "Our Services",
     "kicker": "What we do",
@@ -193,7 +207,8 @@
           "i5": "Exam boards, files and folders",
           "i6": "Book covers, stickers, keyrings, bottles and many more",
           "i7": "Science lab practical materials, the full set"
-        }
+        },
+        "cta": "See our stationery items"
       },
       "printing": {
         "label": "Printing",

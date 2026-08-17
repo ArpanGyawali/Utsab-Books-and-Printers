@@ -20,8 +20,17 @@ export type BookStatus = "in_stock" | "out_of_stock" | "arriving";
 /** Class 11/12 stream; null = common to all streams (and classes below 11). */
 export type Stream = "science" | "management" | "arts";
 
-/** Non-school books ("Other books" shelf); null = school textbook. */
-export type Genre = "religious" | "children" | "novel" | "other";
+/**
+ * Non-school books ("Other books" shelf); null = school textbook. A `slug`
+ * from the admin-managed `book_genres` table (0011) — dynamic, so a string.
+ */
+export type Genre = string;
+
+/**
+ * Stationery showcase category (products.category). A `slug` from the
+ * admin-managed `stationery_categories` table (0011) — dynamic, so a string.
+ */
+export type ProductCategory = string;
 
 export interface Database {
   public: {
@@ -143,7 +152,113 @@ export interface Database {
             referencedRelation: "schools";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "books_genre_fk";
+            columns: ["genre"];
+            isOneToOne: false;
+            referencedRelation: "book_genres";
+            referencedColumns: ["slug"];
+          },
         ];
+      };
+      products: {
+        Row: {
+          id: string;
+          name_en: string;
+          name_ne: string | null;
+          category: ProductCategory;
+          price: number | null;
+          /** Path inside the public `products` storage bucket; null = placeholder. */
+          image_path: string | null;
+          visible: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name_en: string;
+          name_ne?: string | null;
+          category: ProductCategory;
+          price?: number | null;
+          image_path?: string | null;
+          visible?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name_en?: string;
+          name_ne?: string | null;
+          category?: ProductCategory;
+          price?: number | null;
+          image_path?: string | null;
+          visible?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "products_category_fk";
+            columns: ["category"];
+            isOneToOne: false;
+            referencedRelation: "stationery_categories";
+            referencedColumns: ["slug"];
+          },
+        ];
+      };
+      book_genres: {
+        Row: {
+          slug: string;
+          name_en: string;
+          name_ne: string | null;
+          sort: number;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          slug: string;
+          name_en: string;
+          name_ne?: string | null;
+          sort?: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          slug?: string;
+          name_en?: string;
+          name_ne?: string | null;
+          sort?: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      stationery_categories: {
+        Row: {
+          slug: string;
+          name_en: string;
+          name_ne: string | null;
+          sort: number;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          slug: string;
+          name_en: string;
+          name_ne?: string | null;
+          sort?: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          slug?: string;
+          name_en?: string;
+          name_ne?: string | null;
+          sort?: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
       };
       inquiries: {
         Row: {
@@ -258,5 +373,9 @@ export interface Database {
 export type School = Database["public"]["Tables"]["schools"]["Row"];
 export type ClassRow = Database["public"]["Tables"]["classes"]["Row"];
 export type Book = Database["public"]["Tables"]["books"]["Row"];
+export type Product = Database["public"]["Tables"]["products"]["Row"];
+export type BookGenre = Database["public"]["Tables"]["book_genres"]["Row"];
+export type StationeryCategory =
+  Database["public"]["Tables"]["stationery_categories"]["Row"];
 export type Inquiry = Database["public"]["Tables"]["inquiries"]["Row"];
 export type PrintQuote = Database["public"]["Tables"]["print_quotes"]["Row"];

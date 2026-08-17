@@ -113,7 +113,12 @@ export async function saveBook(
   }
 
   updateTag("books");
-  redirect("/admin/books");
+  // "Save & add another" returns to a fresh Add form; plain Save goes to the list.
+  redirect(
+    formData.get("after") === "again"
+      ? "/admin/books/new?added=1"
+      : "/admin/books",
+  );
 }
 
 export async function deleteBook(formData: FormData): Promise<void> {

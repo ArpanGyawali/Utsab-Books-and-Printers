@@ -5,6 +5,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 
 const links = [
   { href: "/services", key: "services" },
+  { href: "/stationery", key: "stationery" },
   { href: "/books", key: "books" },
   { href: "/contact", key: "contact" },
 ] as const;

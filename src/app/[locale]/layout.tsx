@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { Fraunces, Mukta } from "next/font/google";
+import Script from "next/script";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -80,16 +81,15 @@ export default async function LocaleLayout({
                and only for returning visitors (no cookie = LanguageGate is
                about to cover the screen instead). Marked consumed either
                way so it never pops mid-session after choosing a language.
-            Inline + first in body = runs before paint, zero flash. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "document.documentElement.classList.add('js');" +
-              "try{if(!sessionStorage.introShown&&!matchMedia('(prefers-reduced-motion: reduce)').matches){" +
-              "if(document.cookie.indexOf('utsab-lang-chosen=')!==-1)document.documentElement.classList.add('intro');" +
-              "sessionStorage.introShown='1'}}catch(e){}",
-          }}
-        />
+            beforeInteractive = Next inlines it into the initial HTML so it runs
+            before paint (zero flash), while keeping it out of React's client
+            re-renders — which is what a raw <script> would warn about. */}
+        <Script id="pre-paint-gate" strategy="beforeInteractive">
+          {"document.documentElement.classList.add('js');" +
+            "try{if(!sessionStorage.introShown&&!matchMedia('(prefers-reduced-motion: reduce)').matches){" +
+            "if(document.cookie.indexOf('utsab-lang-chosen=')!==-1)document.documentElement.classList.add('intro');" +
+            "sessionStorage.introShown='1'}}catch(e){}"}
+        </Script>
         <IntroLoader />
         <NextIntlClientProvider>
           <LanguageGate />

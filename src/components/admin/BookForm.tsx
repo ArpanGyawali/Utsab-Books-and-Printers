@@ -3,10 +3,15 @@
 import Image from "next/image";
 import { useActionState, useState } from "react";
 import Button from "@/components/Button";
+import NepaliInput from "./NepaliInput";
 import type { FormState } from "@/app/admin/(panel)/books/actions";
-import { GENRE_LABELS, GENRES } from "@/lib/genres";
 import { STREAM_CLASS_IDS, STREAMS } from "@/lib/streams";
-import type { Book, BookStatus, ClassRow, Stream } from "@/lib/supabase/types";
+import type {
+  Book,
+  BookStatus,
+  ClassRow,
+  Stream,
+} from "@/lib/supabase/types";
 
 /**
  * Create/edit book form. Phone-first: 44px targets, three-segment status
@@ -36,12 +41,14 @@ export default function BookForm({
   coverUrl,
   schools,
   classes,
+  genres,
 }: {
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
   book?: Book;
   coverUrl?: string | null;
   schools: { id: string; name_en: string }[];
   classes: ClassRow[];
+  genres: { slug: string; name_en: string }[];
 }) {
   const [state, formAction, pending] = useActionState(action, null);
   const [status, setStatus] = useState<BookStatus>(book?.status ?? "in_stock");
@@ -114,9 +121,9 @@ export default function BookForm({
             <option value="" disabled>
               Pick…
             </option>
-            {GENRES.map((g) => (
-              <option key={g} value={g}>
-                {GENRE_LABELS[g]}
+            {genres.map((g) => (
+              <option key={g.slug} value={g.slug}>
+                {g.name_en}
               </option>
             ))}
           </select>
@@ -178,7 +185,7 @@ export default function BookForm({
       </label>
       <label className="block">
         <span className="mb-1 block text-sm font-medium">Title (Nepali) — optional</span>
-        <input name="title_ne" defaultValue={book?.title_ne ?? ""} className={inputCls} />
+        <NepaliInput name="title_ne" defaultValue={book?.title_ne ?? ""} className={inputCls} />
       </label>
 
       <div className="grid grid-cols-2 gap-3">
@@ -306,9 +313,26 @@ export default function BookForm({
         </p>
       ) : null}
 
-      <Button type="submit" disabled={pending}>
-        {pending ? "Saving…" : book ? "Save changes" : "Add book"}
-      </Button>
+      {book ? (
+        <Button type="submit" name="after" value="list" disabled={pending}>
+          {pending ? "Saving…" : "Save changes"}
+        </Button>
+      ) : (
+        <div className="flex flex-wrap gap-3">
+          <Button type="submit" name="after" value="again" disabled={pending}>
+            {pending ? "Saving…" : "Save & add another"}
+          </Button>
+          <Button
+            type="submit"
+            name="after"
+            value="list"
+            variant="secondary"
+            disabled={pending}
+          >
+            Save & finish
+          </Button>
+        </div>
+      )}
     </form>
   );
 }

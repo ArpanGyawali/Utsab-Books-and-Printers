@@ -1,4 +1,3 @@
-import { isGenre } from "@/lib/genres";
 import { isStream, STREAM_CLASS_IDS } from "@/lib/streams";
 import type { BookStatus, Genre, Stream } from "@/lib/supabase/types";
 
@@ -46,8 +45,10 @@ export function parseBookForm(
   let subject = "";
   let genre: Genre | null = null;
   if (isOther) {
+    // Genre is a slug from the admin-managed book_genres list (the form's
+    // <select> is populated from it); the DB foreign key rejects anything else.
     const rawGenre = str(fd, "genre");
-    if (!isGenre(rawGenre)) return { ok: false, error: "Pick what kind of book it is." };
+    if (!rawGenre) return { ok: false, error: "Pick what kind of book it is." };
     genre = rawGenre;
   } else {
     class_id = Number.parseInt(toAsciiDigits(str(fd, "class_id")), 10);

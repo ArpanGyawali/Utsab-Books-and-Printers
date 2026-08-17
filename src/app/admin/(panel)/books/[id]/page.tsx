@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/admin/auth";
 import { coverUrl } from "@/lib/books";
+import { getBookGenres } from "@/lib/genres";
 import BookForm from "@/components/admin/BookForm";
 import ConfirmSubmit from "@/components/admin/ConfirmSubmit";
 import { deleteBook, saveBook } from "../actions";
@@ -13,11 +14,13 @@ export default async function EditBookPage({
   const { supabase } = await requireAdmin();
   const { id } = await params;
 
-  const [{ data: book }, { data: schools }, { data: classes }] = await Promise.all([
-    supabase.from("books").select("*").eq("id", id).maybeSingle(),
-    supabase.from("schools").select("id, name_en").eq("active", true).order("name_en"),
-    supabase.from("classes").select("*").order("sort"),
-  ]);
+  const [{ data: book }, { data: schools }, { data: classes }, genres] =
+    await Promise.all([
+      supabase.from("books").select("*").eq("id", id).maybeSingle(),
+      supabase.from("schools").select("id, name_en").eq("active", true).order("name_en"),
+      supabase.from("classes").select("*").order("sort"),
+      getBookGenres(false),
+    ]);
   if (!book) notFound();
 
   return (
@@ -35,6 +38,7 @@ export default async function EditBookPage({
           coverUrl={coverUrl(book)}
           schools={schools ?? []}
           classes={classes ?? []}
+          genres={genres}
         />
       </div>
 

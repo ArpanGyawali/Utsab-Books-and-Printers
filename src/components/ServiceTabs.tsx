@@ -173,6 +173,10 @@ export default function ServiceTabs() {
               <Button href="/books" variant="secondary" className="mt-5">
                 {t("tabs.books.cta")}
               </Button>
+            ) : tab.key === "stationery" ? (
+              <Button href="/stationery" variant="secondary" className="mt-5">
+                {t("tabs.stationery.cta")}
+              </Button>
             ) : null}
           </div>
         </div>

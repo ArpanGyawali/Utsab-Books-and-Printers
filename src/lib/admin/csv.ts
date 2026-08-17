@@ -1,6 +1,5 @@
 import Papa from "papaparse";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { isGenre } from "@/lib/genres";
 import { isStream, STREAM_CLASS_IDS } from "@/lib/streams";
 import type { BookStatus, Database, Genre, Stream } from "@/lib/supabase/types";
 
@@ -33,6 +32,14 @@ const CLASS_KEYS: Record<number, string> = Object.fromEntries(
   Object.entries(CLASS_IDS).map(([k, v]) => [v, k])
 );
 
+/** The class tokens a CSV/template cell accepts (nursery, lkg, ukg, 1…12). */
+export const CLASS_TOKENS: string[] = Object.keys(CLASS_IDS);
+
+/** class_id → its template token ("7"), or "" for a non-school (other) book. */
+export function classToken(classId: number | null): string {
+  return classId !== null ? CLASS_KEYS[classId] ?? String(classId) : "";
+}
+
 const toAsciiDigits = (s: string) =>
   s.replace(/[०-९]/g, (d) => String("०१२३४५६७८९".indexOf(d)));
 
@@ -53,7 +60,8 @@ export type CsvBookRow = {
 
 export function parseBooksCsv(
   csv: string,
-  schoolId: string
+  schoolId: string,
+  validGenres: Set<string>
 ): { rows: CsvBookRow[]; errors: string[] } {
   const errors: string[] = [];
   const { data: rawRows, errors: parseErrors } = Papa.parse<Record<string, string>>(
@@ -73,9 +81,9 @@ export function parseBooksCsv(
     let classId: number | null = null;
     let genre: Genre | null = null;
     if (!rawClass && rawGenre) {
-      if (!isGenre(rawGenre))
+      if (!validGenres.has(rawGenre))
         return errors.push(
-          `line ${line}: genre must be religious, children, novel or other, got "${r.genre}"`
+          `line ${line}: genre must be one of the managed book types (${[...validGenres].join(", ")}), got "${r.genre}"`
         );
       genre = rawGenre;
     } else {
@@ -187,9 +195,10 @@ const COMPARED = [
 export async function previewBooksImport(
   supabase: SupabaseClient<Database>,
   csv: string,
-  schoolId: string
+  schoolId: string,
+  validGenres: Set<string>
 ): Promise<ImportPreview> {
-  const { rows, errors } = parseBooksCsv(csv, schoolId);
+  const { rows, errors } = parseBooksCsv(csv, schoolId, validGenres);
   const preview: ImportPreview = {
     inserts: [],
     updates: [],
@@ -234,52 +243,4 @@ export async function previewBooksImport(
     else preview.unchangedCount++;
   }
   return preview;
-}
-
-/** books table → CSV in the import template's exact column order. */
-export function booksToCsv(
-  books: {
-    class_id: number | null;
-    subject: string;
-    title_en: string;
-    title_ne: string | null;
-    publisher: string | null;
-    price: number | string | null;
-    status: string;
-    units: number;
-    expected_arrival: string | null;
-    stream: string | null;
-    genre: string | null;
-  }[]
-): string {
-  return Papa.unparse(
-    books.map((b) => ({
-      class: b.class_id !== null ? CLASS_KEYS[b.class_id] ?? String(b.class_id) : "",
-      subject: b.subject,
-      title_en: b.title_en,
-      title_ne: b.title_ne ?? "",
-      publisher: b.publisher ?? "",
-      price: b.price ?? "",
-      status: b.status,
-      units: b.units,
-      expected_arrival: b.expected_arrival ?? "",
-      stream: b.stream ?? "",
-      genre: b.genre ?? "",
-    })),
-    {
-      columns: [
-        "class",
-        "subject",
-        "title_en",
-        "title_ne",
-        "publisher",
-        "price",
-        "status",
-        "units",
-        "expected_arrival",
-        "stream",
-        "genre",
-      ],
-    }
-  );
 }

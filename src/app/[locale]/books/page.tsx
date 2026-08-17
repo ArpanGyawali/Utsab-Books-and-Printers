@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Form from "next/form";
 import { after } from "next/server";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import AskInstead from "@/components/AskInstead";
 import BookCard from "@/components/BookCard";
 import ClassSetCard from "@/components/ClassSetCard";
 import Container from "@/components/Container";
@@ -15,7 +16,7 @@ import {
 import { Link } from "@/i18n/navigation";
 import { logEvent } from "@/lib/analytics";
 import { className, getBooks, getClasses } from "@/lib/books";
-import { GENRES, isGenre } from "@/lib/genres";
+import { genreLabel, getBookGenres } from "@/lib/genres";
 import { waLink } from "@/lib/inquiry";
 import { booklistFileUrl, getBooklist } from "@/lib/settings";
 import { isStream, STREAM_CLASS_IDS, STREAMS } from "@/lib/streams";
@@ -49,6 +50,16 @@ const chipBase =
   "duration-[var(--dur-micro)] motion-safe:active:scale-95";
 const chipOn = `${chipBase} border-ink bg-ink text-paper`;
 const chipOff = `${chipBase} border-[var(--ink-faint)] bg-paper text-ink hover:bg-paper-shade`;
+
+// The class picker is the page's primary action — bigger 44px tap targets and
+// a touch more presence than the secondary (subject/stream/genre) chips.
+const classChipBase =
+  "inline-flex min-h-11 min-w-11 items-center justify-center whitespace-nowrap rounded-sm " +
+  "border-[1.5px] px-4 py-1.5 text-[15px] font-medium " +
+  "transition-[scale,color,background-color,border-color] " +
+  "duration-[var(--dur-micro)] motion-safe:active:scale-95";
+const classChipOn = `${classChipBase} border-ink bg-ink text-paper`;
+const classChipOff = `${classChipBase} border-[var(--ink-faint)] bg-paper text-ink hover:bg-paper-shade`;
 
 /** Query object for a filter link — omits empty values so URLs stay clean. */
 function filters(next: {
@@ -85,6 +96,9 @@ export default async function BooksPage({
 
   const booklist = await getBooklist();
   const classes = await getClasses();
+  // Admin-managed genres (the "Other books" shelf); a slug→row map for labels.
+  const allGenres = await getBookGenres(true);
+  const genreBySlug = new Map(allGenres.map((g) => [g.slug, g]));
   const classParam = first(sp.class);
   // "other" = the non-school shelf (novels, religious, children's books).
   const otherSelected = classParam === "other";
@@ -108,10 +122,11 @@ export default async function BooksPage({
 
   // Genre filter — the "other" shelf only; chips appear for genres in stock.
   const genres = otherSelected
-    ? GENRES.filter((g) => books?.some((b) => b.genre === g))
+    ? allGenres.filter((g) => books?.some((b) => b.genre === g.slug))
     : [];
   const genreParam = first(sp.genre).trim();
-  const selectedGenre = otherSelected && isGenre(genreParam) ? genreParam : "";
+  const selectedGenre =
+    otherSelected && genreBySlug.has(genreParam) ? genreParam : "";
 
   const subjects =
     selectedClass && books?.length
@@ -149,10 +164,11 @@ export default async function BooksPage({
     classes?.map((c) => [c.id, className(c, locale)]),
   );
   /** Card badge + WhatsApp text: class for textbooks, genre for the rest. */
-  const bookLabel = (book: Book) =>
-    book.class_id !== null
-      ? (classLabelById.get(book.class_id) ?? "")
-      : t(`genres.${book.genre ?? "other"}`);
+  const bookLabel = (book: Book) => {
+    if (book.class_id !== null) return classLabelById.get(book.class_id) ?? "";
+    const g = book.genre ? genreBySlug.get(book.genre) : null;
+    return g ? genreLabel(g, locale) : t("otherBooks");
+  };
   // What people search is the monthly report's core data — log the query
   // (not chip-only navigations) after the response is sent.
   if (q && !offline) {
@@ -178,7 +194,7 @@ export default async function BooksPage({
     [
       selectedClass ? className(selectedClass, locale) : "",
       selectedGenre
-        ? t(`genres.${selectedGenre}`)
+        ? genreLabel(genreBySlug.get(selectedGenre)!, locale)
         : otherSelected
           ? t("otherBooks")
           : "",
@@ -248,18 +264,21 @@ export default async function BooksPage({
           </section>
         ) : null}
 
-        {/* Class chips — horizontal scroll on mobile */}
+        {/* Class chips — wrap so every class (and the Other shelf) is visible
+          at once; no horizontal scrolling to reach 11, 12 or Other. */}
         {classes ? (
           <nav aria-label={t("classLabel")} className="mt-6">
             <p className="mb-2 text-sm font-medium uppercase tracking-widest text-accent">
               {t("classLabel")}
             </p>
-            <ul className="flex items-stretch gap-2 overflow-x-auto pb-2">
+            <ul className="flex flex-wrap items-stretch gap-2">
               <li>
                 <Link
                   scroll={false}
                   href={filters({ q })}
-                  className={selectedClass || otherSelected ? chipOff : chipOn}
+                  className={
+                    selectedClass || otherSelected ? classChipOff : classChipOn
+                  }
                 >
                   {t("allClasses")}
                 </Link>
@@ -269,22 +288,22 @@ export default async function BooksPage({
                   <Link
                     scroll={false}
                     href={filters({ class: c.id, q })}
-                    className={selectedClass?.id === c.id ? chipOn : chipOff}
+                    className={
+                      selectedClass?.id === c.id ? classChipOn : classChipOff
+                    }
                   >
                     {className(c, locale)}
                   </Link>
                 </li>
               ))}
-              {/* The non-school shelf sits after a rule — same row, its own drawer */}
-              <li
-                aria-hidden="true"
-                className="w-px shrink-0 self-stretch bg-[var(--ink-faint)]"
-              />
+              {/* Full-width break: the non-school shelf starts its own row, so
+                it stays visually separate from the school classes. */}
+              <li aria-hidden="true" className="basis-full" />
               <li>
                 <Link
                   scroll={false}
                   href={filters({ class: "other", q })}
-                  className={otherSelected ? chipOn : chipOff}
+                  className={otherSelected ? classChipOn : classChipOff}
                 >
                   {t("otherBooks")}
                 </Link>
@@ -412,13 +431,13 @@ export default async function BooksPage({
                 </Link>
               </li>
               {genres.map((g) => (
-                <li key={g}>
+                <li key={g.slug}>
                   <Link
                     scroll={false}
-                    href={filters({ class: "other", q, genre: g })}
-                    className={selectedGenre === g ? chipOn : chipOff}
+                    href={filters({ class: "other", q, genre: g.slug })}
+                    className={selectedGenre === g.slug ? chipOn : chipOff}
                   >
-                    {t(`genres.${g}`)}
+                    {genreLabel(g, locale)}
                   </Link>
                 </li>
               ))}
@@ -528,31 +547,5 @@ export default async function BooksPage({
         </div>
       </Container>
     </BooksPendingProvider>
-  );
-}
-
-function AskInstead({
-  heading,
-  cta,
-  message,
-  query,
-}: {
-  heading: string;
-  cta: string;
-  message: string;
-  query: string;
-}) {
-  return (
-    <Reveal className="mt-10 rounded-md border-[1.5px] border-dashed border-[var(--ink-faint)] p-6 text-center">
-      <p className="text-ink-soft">{heading}</p>
-      <InquireLink
-        href={waLink(message)}
-        title={query}
-        source="no_results"
-        className="lift mt-4 inline-flex min-h-11 items-center rounded-sm border border-accent-deep bg-accent px-5 py-2 font-medium text-paper shadow-[var(--shadow-card)] hover:bg-accent-deep"
-      >
-        {cta}
-      </InquireLink>
-    </Reveal>
   );
 }

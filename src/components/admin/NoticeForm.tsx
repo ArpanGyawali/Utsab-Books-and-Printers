@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Button from "@/components/Button";
+import NepaliInput from "./NepaliInput";
 import {
   saveNotice,
   type SettingsState,
@@ -50,7 +51,8 @@ export default function NoticeForm({
 
       <label className="mt-2 block">
         <span className="mb-1 block text-sm font-medium">Text (Nepali)</span>
-        <textarea
+        <NepaliInput
+          as="textarea"
           name="text_ne"
           rows={2}
           defaultValue={initial?.text_ne ?? ""}

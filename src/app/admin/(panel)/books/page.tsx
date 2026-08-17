@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { requireAdmin } from "@/lib/admin/auth";
 import { coverUrl } from "@/lib/books";
-import { GENRE_LABELS } from "@/lib/genres";
+import { getBookGenres } from "@/lib/genres";
 import AdminBadge from "@/components/admin/AdminBadge";
 import type { BookStatus } from "@/lib/supabase/types";
 
@@ -42,6 +42,10 @@ export default async function AdminBooksPage({
   if (status) query = query.eq("status", status);
 
   const { data: books, error } = await query;
+
+  // Admin UI is English-only; map genre slug → name_en for the "other" shelf.
+  const genres = await getBookGenres(false);
+  const genreLabelBySlug = new Map(genres.map((g) => [g.slug, g.name_en]));
 
   return (
     <>
@@ -134,7 +138,8 @@ export default async function AdminBooksPage({
                     <span className="block truncate font-medium">{book.title_en}</span>
                     <span className="block truncate text-sm text-ink-soft">
                       {[
-                        book.classes?.name_en ?? (book.genre ? GENRE_LABELS[book.genre] : null),
+                        book.classes?.name_en ??
+                          (book.genre ? genreLabelBySlug.get(book.genre) ?? book.genre : null),
                         book.subject,
                         book.price !== null ? `Rs. ${Number(book.price)}` : "Ask",
                       ]
