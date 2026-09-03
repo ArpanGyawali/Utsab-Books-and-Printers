@@ -1,7 +1,16 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
 
-const paths = ["", "/services", "/stationery", "/books", "/contact"] as const;
+// The showcase ships one URL per kind: /shop is the stationery tab, and the
+// sports tab is a real, shareable, indexable query URL.
+const paths = [
+  "",
+  "/services",
+  "/shop",
+  "/shop?kind=sports",
+  "/books",
+  "/contact",
+] as const;
 const locales = ["en", "ne"] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {

@@ -27,8 +27,15 @@ export type Stream = "science" | "management" | "arts";
 export type Genre = string;
 
 /**
- * Stationery showcase category (products.category). A `slug` from the
- * admin-managed `stationery_categories` table (0011) — dynamic, so a string.
+ * Showcase kind (products.kind / product_categories.kind) — stationery items
+ * and sports items share one table, one form and one grid (0012).
+ */
+export type ProductKind = "stationery" | "sports";
+
+/**
+ * Showcase category (products.category). A `slug` from the admin-managed
+ * `product_categories` table, scoped to a kind (0011/0012) — dynamic, so a
+ * string.
  */
 export type ProductCategory = string;
 
@@ -166,6 +173,7 @@ export interface Database {
           id: string;
           name_en: string;
           name_ne: string | null;
+          kind: ProductKind;
           category: ProductCategory;
           price: number | null;
           /** Path inside the public `products` storage bucket; null = placeholder. */
@@ -178,6 +186,7 @@ export interface Database {
           id?: string;
           name_en: string;
           name_ne?: string | null;
+          kind?: ProductKind;
           category: ProductCategory;
           price?: number | null;
           image_path?: string | null;
@@ -189,6 +198,7 @@ export interface Database {
           id?: string;
           name_en?: string;
           name_ne?: string | null;
+          kind?: ProductKind;
           category?: ProductCategory;
           price?: number | null;
           image_path?: string | null;
@@ -199,10 +209,10 @@ export interface Database {
         Relationships: [
           {
             foreignKeyName: "products_category_fk";
-            columns: ["category"];
+            columns: ["kind", "category"];
             isOneToOne: false;
-            referencedRelation: "stationery_categories";
-            referencedColumns: ["slug"];
+            referencedRelation: "product_categories";
+            referencedColumns: ["kind", "slug"];
           },
         ];
       };
@@ -233,8 +243,9 @@ export interface Database {
         };
         Relationships: [];
       };
-      stationery_categories: {
+      product_categories: {
         Row: {
+          kind: ProductKind;
           slug: string;
           name_en: string;
           name_ne: string | null;
@@ -243,6 +254,7 @@ export interface Database {
           created_at: string;
         };
         Insert: {
+          kind?: ProductKind;
           slug: string;
           name_en: string;
           name_ne?: string | null;
@@ -251,6 +263,7 @@ export interface Database {
           created_at?: string;
         };
         Update: {
+          kind?: ProductKind;
           slug?: string;
           name_en?: string;
           name_ne?: string | null;
@@ -375,7 +388,7 @@ export type ClassRow = Database["public"]["Tables"]["classes"]["Row"];
 export type Book = Database["public"]["Tables"]["books"]["Row"];
 export type Product = Database["public"]["Tables"]["products"]["Row"];
 export type BookGenre = Database["public"]["Tables"]["book_genres"]["Row"];
-export type StationeryCategory =
-  Database["public"]["Tables"]["stationery_categories"]["Row"];
+export type ProductCategoryRow =
+  Database["public"]["Tables"]["product_categories"]["Row"];
 export type Inquiry = Database["public"]["Tables"]["inquiries"]["Row"];
 export type PrintQuote = Database["public"]["Tables"]["print_quotes"]["Row"];

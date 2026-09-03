@@ -3,15 +3,16 @@ import { supabaseServer } from "./supabase/server";
 import type { Product } from "./supabase/types";
 
 /**
- * Cached reads for the public stationery showcase.
+ * Cached reads for the public showcase (stationery + sports items).
  * Tagged 'products' — every admin mutation (save/delete/hide) calls
  * updateTag('products') so the public grid updates immediately.
  *
  * As in lib/books.ts, the try/catch lives OUTSIDE the unstable_cache wrapper so
  * a DB outage isn't cached: callers get null and degrade to a WhatsApp handoff.
  *
- * The whole visible list is cached as ONE entry (≤100 rows); the category chips
- * filter it in the RSC rather than re-querying per category.
+ * The whole visible list is cached as ONE entry (≤200 rows) across both kinds;
+ * the kind tabs and category chips filter it in the RSC rather than re-querying
+ * per tab — one cache entry also lets the page count both tabs for free.
  */
 
 const getProductsCached = unstable_cache(
@@ -26,7 +27,7 @@ const getProductsCached = unstable_cache(
     if (error) throw new Error(error.message);
     return data;
   },
-  ["products-list-v1"],
+  ["products-list-v2"],
   { tags: ["products"] }
 );
 
@@ -46,7 +47,7 @@ export function productImageUrl(product: Product): string | null {
   return `${base}/storage/v1/object/public/products/${product.image_path}`;
 }
 
-/** Locale-aware product name with cross-locale fallback (SKILL.md i18n rules). */
+/** Locale-aware item name with cross-locale fallback (SKILL.md i18n rules). */
 export function productName(product: Product, locale: string): string {
   if (locale === "ne") return product.name_ne || product.name_en;
   return product.name_en || product.name_ne || "";

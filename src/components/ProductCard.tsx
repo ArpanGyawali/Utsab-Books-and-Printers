@@ -4,8 +4,8 @@ import { productImageUrl, productName } from "@/lib/products";
 import type { Product } from "@/lib/supabase/types";
 
 /**
- * A stationery item shown as a taped photo print — same paper-&-ink language as
- * the services-page figures, sized for a dense grid. The whole card is a quiet
+ * A showcase item (stationery or sports) shown as a taped photo print — same
+ * paper-&-ink language as the services-page figures, sized for a dense grid. The whole card is a quiet
  * showcase: no inquire button, no stock badge; the price (when set) is a little
  * stamp on the corner, otherwise the item just says "come and ask".
  *
@@ -21,7 +21,7 @@ export default function ProductCard({
   index: number;
 }) {
   const locale = useLocale();
-  const t = useTranslations("stationery");
+  const t = useTranslations("shop");
   const name = productName(product, locale);
   const src = productImageUrl(product);
   const tilt = index % 2 === 0 ? "-rotate-[0.7deg]" : "rotate-[0.7deg]";

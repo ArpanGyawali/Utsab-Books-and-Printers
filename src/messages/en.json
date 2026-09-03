@@ -6,9 +6,15 @@
       "title": "Services — Utsab Books and Printers",
       "description": "Stationery, printing, photocopy, lamination, binding, rubber stamps, photo framing, school books, uniforms and sports items in Ranibagiya, Sainamaina. Send us your print job on WhatsApp."
     },
-    "stationery": {
-      "title": "Stationery — Utsab Books and Printers",
-      "description": "Browse the stationery we stock — pens, copies, geometry boxes, art supplies, files and school gear — at our shop in Sainamaina, Rupandehi."
+    "shop": {
+      "stationery": {
+        "title": "Stationery — Utsab Books and Printers",
+        "description": "Browse the stationery we stock — pens, copies, geometry boxes, art supplies, files and school gear — at our shop in Sainamaina, Rupandehi."
+      },
+      "sports": {
+        "title": "Sports items — Utsab Books and Printers",
+        "description": "Browse the sports items we stock — cricket bats and balls, footballs, badminton rackets and shuttles, carrom and chess — at our shop in Sainamaina, Rupandehi."
+      }
     },
     "books": {
       "title": "Look for Book — Utsab Books and Printers",
@@ -28,7 +34,7 @@
   "nav": {
     "home": "Home",
     "services": "Services",
-    "stationery": "Stationery",
+    "shop": "Stationery & Sports",
     "books": "Look for Book",
     "contact": "Contact",
     "openNow": "Open now",
@@ -173,10 +179,18 @@
     "noResultsWaTemplate": "Hello Utsab Books! I'm looking for: {query}",
     "offline": "Live stock can't be checked right now — but the shelf is just a message away."
   },
-  "stationery": {
+  "shop": {
     "kicker": "On our shelves",
-    "title": "Our Stationery",
-    "intro": "A look at the stationery we keep in stock. Tap a category to browse — and if you don't see something, just ask.",
+    "title": "Stationery & Sports",
+    "kindLabel": "What you're looking for",
+    "kinds": {
+      "stationery": "Stationery",
+      "sports": "Sports"
+    },
+    "intro": {
+      "stationery": "A look at the stationery we keep in stock. Tap a category to browse — and if you don't see something, just ask.",
+      "sports": "Bats, balls, rackets and the rest of our sports counter. Tap a category to browse — and if you don't see something, just ask."
+    },
     "categoryLabel": "Category",
     "allCategories": "All",
     "priceRs": "Rs. {price}",
@@ -254,7 +268,8 @@
           "i5": "Help with filling online forms — Lok Sewa, teacher service, army, police, passport and more",
           "i6": "Ready-made school and college uniforms — ties, belts, trousers, sweaters — at fair prices",
           "i7": "Badminton racket stringing, strength guaranteed"
-        }
+        },
+        "cta": "See our sports items"
       }
     },
     "quote": {

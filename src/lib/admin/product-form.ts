@@ -1,8 +1,10 @@
-import type { ProductCategory } from "@/lib/supabase/types";
+import { isProductKind } from "@/lib/product-kinds";
+import type { ProductCategory, ProductKind } from "@/lib/supabase/types";
 
 /**
- * Parsing + validation for the admin stationery form (create and edit share
- * it). Returns clean column values or a human-readable error.
+ * Parsing + validation for the admin item form — stationery and sports items
+ * share it, told apart by the hidden `kind` field the route sets. Returns clean
+ * column values or a human-readable error.
  *
  * Item photos reuse the book-cover upload constraints verbatim (generic
  * jpg/png/webp, 5 MB) — re-exported so the actions file has a single import.
@@ -20,6 +22,7 @@ const str = (fd: FormData, name: string) => String(fd.get(name) ?? "").trim();
 export type ProductColumns = {
   name_en: string;
   name_ne: string | null;
+  kind: ProductKind;
   category: ProductCategory;
   price: number | null;
   visible: boolean;
@@ -31,9 +34,13 @@ export function parseProductForm(
   const name_en = str(fd, "name_en");
   if (!name_en) return { ok: false, error: "Item name (English) is required." };
 
-  // Category is a slug from the admin-managed stationery_categories list (the
-  // form's <select> is populated from it); the DB foreign key rejects anything
-  // else.
+  // Kind comes from the route the form was opened in, not from user input.
+  const kind = str(fd, "kind");
+  if (!isProductKind(kind)) return { ok: false, error: "Unknown item type." };
+
+  // Category is a slug from that kind's admin-managed list (the form's <select>
+  // is populated from it); the composite foreign key rejects anything else —
+  // including a category belonging to the other kind.
   const category = str(fd, "category");
   if (!category) return { ok: false, error: "Pick a category." };
 
@@ -48,6 +55,7 @@ export function parseProductForm(
     data: {
       name_en,
       name_ne: str(fd, "name_ne") || null,
+      kind,
       category,
       price,
       visible: fd.get("visible") === "on",

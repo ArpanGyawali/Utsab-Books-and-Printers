@@ -1,29 +1,43 @@
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/admin/auth";
-import { getStationeryCategories } from "@/lib/product-categories";
+import { getProductCategories } from "@/lib/product-categories";
+import { PRODUCT_KIND_ADMIN, isProductKind } from "@/lib/product-kinds";
 import { productImageUrl } from "@/lib/products";
 import { toggleProductVisible } from "./actions";
 
-/** Stationery items → tap a row to edit; quick show/hide without leaving. */
+/**
+ * Showcase items for one kind (stationery or sports) → tap a row to edit;
+ * quick show/hide without leaving. Both kinds share these screens; the `kind`
+ * segment picks the list, the category chips and every link back.
+ */
 
-export default async function AdminStationeryPage({
+export default async function AdminProductsPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ kind: string }>;
   searchParams: Promise<{ category?: string }>;
 }) {
   const { supabase } = await requireAdmin();
-  const params = await searchParams;
+  const { kind } = await params;
+  if (!isProductKind(kind)) notFound();
+  const { label } = PRODUCT_KIND_ADMIN[kind];
 
-  // Admin-managed categories drive the filter chips + row labels (English-only).
-  const categories = await getStationeryCategories(false);
+  const sp = await searchParams;
+
+  // Admin-managed categories for this kind drive the filter chips + row labels
+  // (English-only).
+  const categories = await getProductCategories(kind, false);
   const categoryLabelBySlug = new Map(categories.map((c) => [c.slug, c.name_en]));
-  const raw = params.category ?? "";
+  const raw = sp.category ?? "";
   const category = categoryLabelBySlug.has(raw) ? raw : "";
 
   let query = supabase
     .from("products")
     .select("*")
+    .eq("kind", kind)
     .order("created_at", { ascending: false })
     .limit(500);
   if (category) query = query.eq("category", category);
@@ -38,9 +52,9 @@ export default async function AdminStationeryPage({
   return (
     <>
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold">Stationery</h1>
+        <h1 className="text-2xl font-semibold">{label}</h1>
         <Link
-          href="/admin/stationery/new"
+          href={`/admin/products/${kind}/new`}
           className="inline-flex min-h-11 items-center rounded-sm border border-accent-deep bg-accent px-4 text-sm font-medium text-paper transition-colors duration-150 hover:bg-accent-deep"
         >
           + Add item
@@ -48,14 +62,14 @@ export default async function AdminStationeryPage({
       </div>
 
       <div className="mt-4 flex gap-1.5 overflow-x-auto pb-1">
-        {filters.map(({ value, label }) => {
+        {filters.map(({ value, label: chip }) => {
           const active = category === value;
           const href = value
-            ? `/admin/stationery?category=${value}`
-            : "/admin/stationery";
+            ? `/admin/products/${kind}?category=${value}`
+            : `/admin/products/${kind}`;
           return (
             <Link
-              key={label}
+              key={chip}
               href={href}
               className={`inline-flex min-h-9 shrink-0 items-center rounded-sm border-[1.5px] px-3 text-sm font-medium transition-colors duration-150 ${
                 active
@@ -63,7 +77,7 @@ export default async function AdminStationeryPage({
                   : "border-[var(--ink-faint)] text-ink-soft hover:bg-paper-shade"
               }`}
             >
-              {label}
+              {chip}
             </Link>
           );
         })}
@@ -84,7 +98,7 @@ export default async function AdminStationeryPage({
             return (
               <li key={product.id} className="flex items-center gap-3 p-3">
                 <Link
-                  href={`/admin/stationery/${product.id}`}
+                  href={`/admin/products/${kind}/${product.id}`}
                   className="flex min-w-0 flex-1 items-center gap-3 transition-colors duration-150 hover:opacity-80"
                 >
                   {image ? (
@@ -127,6 +141,7 @@ export default async function AdminStationeryPage({
                 {/* Quick show/hide — a sibling form, not nested in the row link */}
                 <form action={toggleProductVisible} className="shrink-0">
                   <input type="hidden" name="id" value={product.id} />
+                  <input type="hidden" name="kind" value={kind} />
                   <input type="hidden" name="visible" value={product.visible ? "false" : "true"} />
                   {category ? (
                     <input type="hidden" name="category" value={category} />

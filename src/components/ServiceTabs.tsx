@@ -13,6 +13,9 @@ import PrintQuoteForm from "./PrintQuoteForm";
  */
 
 /**
+ * `cta` (optional) is the tab's "go see the real thing" link — the showcase
+ * page for stationery/sports items, Look-for-Book for books.
+ *
  * Each tab's photo keeps its native aspect ratio and is framed like a print
  * laid on the counter (paper mat + tape), same language as the home-page
  * figures. Portrait shots get a narrower column so they don't tower over
@@ -27,6 +30,7 @@ const TABS = [
     height: 1138,
     portrait: true,
     tilt: "-rotate-[1.2deg]",
+    cta: "/shop",
   },
   {
     key: "printing",
@@ -45,6 +49,7 @@ const TABS = [
     height: 1314,
     portrait: true,
     tilt: "rotate-[1.2deg]",
+    cta: "/books",
   },
   {
     key: "other",
@@ -54,6 +59,7 @@ const TABS = [
     height: 1007,
     portrait: false,
     tilt: "-rotate-[0.8deg]",
+    cta: "/shop?kind=sports",
   },
 ] as const;
 
@@ -169,13 +175,9 @@ export default function ServiceTabs() {
                 </li>
               ))}
             </ul>
-            {tab.key === "books" ? (
-              <Button href="/books" variant="secondary" className="mt-5">
-                {t("tabs.books.cta")}
-              </Button>
-            ) : tab.key === "stationery" ? (
-              <Button href="/stationery" variant="secondary" className="mt-5">
-                {t("tabs.stationery.cta")}
+            {"cta" in tab ? (
+              <Button href={tab.cta} variant="secondary" className="mt-5">
+                {t(`tabs.${tab.key}.cta`)}
               </Button>
             ) : null}
           </div>

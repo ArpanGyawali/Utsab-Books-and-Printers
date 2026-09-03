@@ -9,6 +9,17 @@ const nextConfig: NextConfig = {
     // the default 1 MB cap is too small for phone camera photos.
     serverActions: { bodySizeLimit: "8mb" },
   },
+  async redirects() {
+    // /stationery became /shop (stationery + sports) in 0012 — the old URL is
+    // in the sitemap and in the wild, so keep it alive permanently.
+    return [
+      {
+        source: "/:locale(en|ne)/stationery",
+        destination: "/:locale/shop",
+        permanent: true,
+      },
+    ];
+  },
   images: {
     // Admin uploads in public Supabase storage buckets (covers, booklist photo).
     remotePatterns: [

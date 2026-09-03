@@ -1,16 +1,24 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Button from "@/components/Button";
 import NepaliInput from "./NepaliInput";
-import type { FormState } from "@/app/admin/(panel)/stationery/actions";
-import type { Product } from "@/lib/supabase/types";
+import type { FormState } from "@/app/admin/(panel)/products/[kind]/actions";
+import { PRODUCT_KIND_ADMIN, PRODUCT_KINDS } from "@/lib/product-kinds";
+import type { Product, ProductKind } from "@/lib/supabase/types";
 
 /**
- * Create/edit stationery-item form. Phone-first (44px targets). Much simpler
- * than BookForm: name, category, optional price, a show/hide switch, one photo.
- * Devanagari input is fine; the price is normalized server-side.
+ * Create/edit form for a showcase item — stationery and sports share it.
+ * Phone-first (44px targets). Much simpler than BookForm: name, category,
+ * optional price, a show/hide switch, one photo. Devanagari input is fine; the
+ * price is normalized server-side.
+ *
+ * `kind` starts from the route but IS editable: a mis-filed item (the cricket
+ * ball that went in under Stationery) can be moved across without deleting and
+ * re-uploading its photo. Switching it swaps the category dropdown to that
+ * kind's list — the composite FK would reject a mismatched pair anyway — and
+ * the action redirects to whichever list the item ended up in.
  */
 
 const inputCls =
@@ -19,20 +27,55 @@ const inputCls =
 
 export default function ProductForm({
   action,
+  kind: initialKind,
   product,
   imageUrl,
-  categories,
+  categoriesByKind,
 }: {
   action: (prev: FormState, formData: FormData) => Promise<FormState>;
+  kind: ProductKind;
   product?: Product;
   imageUrl?: string | null;
-  categories: { slug: string; name_en: string }[];
+  categoriesByKind: Record<ProductKind, { slug: string; name_en: string }[]>;
 }) {
   const [state, formAction, pending] = useActionState(action, null);
+  const [kind, setKind] = useState<ProductKind>(initialKind);
+  const categories = categoriesByKind[kind];
 
   return (
     <form action={formAction} className="grid gap-4">
       {product ? <input type="hidden" name="id" value={product.id} /> : null}
+
+      <fieldset>
+        <legend className="mb-1 text-sm font-medium">Where does it belong?</legend>
+        <div className="grid grid-cols-2 gap-0 overflow-hidden rounded-sm border-[1.5px] border-ink">
+          {PRODUCT_KINDS.map((k) => (
+            <label key={k} className="block">
+              <input
+                type="radio"
+                name="kind"
+                value={k}
+                checked={kind === k}
+                onChange={() => setKind(k)}
+                className="peer sr-only"
+              />
+              <span
+                className={`flex min-h-11 cursor-pointer items-center justify-center px-1 text-center text-sm font-medium transition-colors duration-150 peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-4 peer-focus-visible:outline-accent ${
+                  kind === k ? "bg-ink text-paper" : "bg-paper text-ink-soft"
+                }`}
+              >
+                {PRODUCT_KIND_ADMIN[k].label}
+              </span>
+            </label>
+          ))}
+        </div>
+        {product && kind !== product.kind ? (
+          <span className="mt-1 block text-xs text-ink-soft">
+            Moving this item to {PRODUCT_KIND_ADMIN[kind].label} — pick a
+            category from that shelf below.
+          </span>
+        ) : null}
+      </fieldset>
 
       <label className="block">
         <span className="mb-1 block text-sm font-medium">Item name (English)</span>
@@ -40,7 +83,7 @@ export default function ProductForm({
           name="name_en"
           defaultValue={product?.name_en}
           required
-          placeholder="e.g. Geometry box"
+          placeholder={PRODUCT_KIND_ADMIN[kind].example}
           className={inputCls}
         />
       </label>
@@ -52,9 +95,12 @@ export default function ProductForm({
       <div className="grid grid-cols-2 gap-3">
         <label className="block">
           <span className="mb-1 block text-sm font-medium">Category</span>
+          {/* key={kind} remounts the select so a kind switch clears a
+              category that belongs to the other shelf */}
           <select
+            key={kind}
             name="category"
-            defaultValue={product?.category ?? ""}
+            defaultValue={kind === product?.kind ? product.category : ""}
             required
             className={inputCls}
           >
